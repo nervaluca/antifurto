@@ -1,0 +1,8 @@
+{
+  "appId": "it.tensolutions.antifurto",
+  "appName": "Manutenzioni Antifurto",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

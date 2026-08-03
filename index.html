@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manutenzioni Antifurto — Ten Solutions</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14171c">
+<style>
+:root{
+  --bg:#14171c;
+  --panel:#1c2128;
+  --panel-2:#232933;
+  --line:#2c333d;
+  --ink:#e8eaed;
+  --ink-dim:#9aa4b2;
+  --ink-faint:#5f6873;
+  --accent:#2dd4bf;
+  --accent-dim:#1d8f80;
+  --ok:#34d399;
+  --warn:#fbbf24;
+  --danger:#f87171;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+body{padding-bottom:90px;min-height:100vh}
+h1,h2,h3{font-family:var(--sans);font-weight:700;letter-spacing:-0.01em;margin:0}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:10px 12px;font-size:15px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+label{display:block;font-size:12px;color:var(--ink-dim);margin:14px 0 5px;text-transform:uppercase;letter-spacing:.04em}
+.mono{font-family:var(--mono)}
+
+/* Top bar */
+header.topbar{position:sticky;top:0;z-index:20;background:rgba(20,23,28,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px}
+header.topbar .back{background:none;border:none;color:var(--accent);font-size:22px;padding:0 4px;line-height:1}
+header.topbar .title{flex:1;overflow:hidden}
+header.topbar .title h1{font-size:17px}
+header.topbar .title .sub{font-size:12px;color:var(--ink-dim);font-family:var(--mono)}
+header.topbar .act{background:var(--panel-2);border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600}
+
+.wrap{padding:14px 16px 24px;max-width:640px;margin:0 auto}
+
+/* LED status dot */
+.led{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;flex-shrink:0}
+.led.ok{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.led.warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+.led.danger{background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.led.neutro{background:var(--ink-faint)}
+
+/* Card / list row */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.rowlink{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.rowlink .main{flex:1;min-width:0}
+.rowlink .main .t{font-size:15.5px;font-weight:600}
+.rowlink .main .s{font-size:12.5px;color:var(--ink-dim);margin-top:2px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowlink .chev{color:var(--ink-faint);font-size:20px}
+.rowlink:active{background:var(--panel-2)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--ink-dim)}
+.empty .big{font-size:38px;margin-bottom:10px}
+.empty p{margin:6px 0}
+
+/* Search */
+.search{position:relative;margin-bottom:14px}
+.search input{padding-left:36px}
+.search::before{content:"⌕";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-faint);font-size:16px}
+
+/* FAB */
+.fab{position:fixed;bottom:22px;right:20px;background:var(--accent);color:#0a1210;border:none;border-radius:50%;width:56px;height:56px;font-size:28px;box-shadow:0 6px 18px rgba(0,0,0,.4);z-index:15}
+.fab:active{transform:scale(.95)}
+
+/* Section headers */
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px}
+.sectionhead h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-dim)}
+.sectionhead .addbtn{background:var(--panel-2);border:1px solid var(--line);color:var(--accent);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:600}
+
+/* Chips / badges */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
+.badge.ok{background:rgba(52,211,153,.14);color:var(--ok)}
+.badge.warn{background:rgba(251,191,36,.14);color:var(--warn)}
+.badge.danger{background:rgba(248,113,113,.14);color:var(--danger)}
+.badge.neutro{background:rgba(154,164,178,.14);color:var(--ink-dim)}
+
+/* Table for history */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--line);padding:6px 8px;letter-spacing:.03em}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end}
+.modal{background:var(--bg);width:100%;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding:8px 18px 28px;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:36px;height:4px;background:var(--line);border-radius:3px;margin:10px auto 4px}
+.modal h2{font-size:18px;padding:10px 0 4px}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.btn{border-radius:10px;padding:12px;font-size:15px;font-weight:700;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);flex:1;text-align:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#0a1210}
+.btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.checkline{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:8px}
+.checkline input[type=checkbox]{width:18px;height:18px;flex-shrink:0}
+.checkline .lbl{flex:1;font-size:14px}
+.checkline select{width:130px;flex-shrink:0}
+.hint{font-size:12px;color:var(--ink-faint);margin-top:4px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel-2);border:1px solid var(--accent);color:var(--ink);padding:10px 18px;border-radius:30px;font-size:13.5px;z-index:100;animation:fadein .2s}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.footer-actions{display:flex;gap:10px;margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.footer-actions .btn{font-size:13px;padding:10px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ===================== DB (localStorage) ===================== */
+const DB_KEY = 'hagerman_db_v1';
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {clienti:[], centrali:[], sensori:[], interventi:[]};
+}
+let DB = loadDB();
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ===================== Catalogo Hager Logisty ===================== */
+// Codici e caratteristiche verificati dai cataloghi/schede prodotto Hager Logisty (Facile, Alma, Expert/Sepio).
+// Dove il tipo batteria non è confermato da fonte, è indicato "da verificare".
+const CATALOGO = {
+  centrale: [
+    {codice:'S315-22I', nome:'Logisty Facile 15 — 2 zone, tastiera + sintesi vocale, 15 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'RLC001T', nome:'Logisty Alma — 2 gruppi, 15 rivelatori, tastiera + sintesi vocale', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'L2303', nome:'Logisty 2 — linea precedente', batteria:'Tampone interna ricaricabile', autonomia:null},
+  ],
+  movimento: [
+    {codice:'S161-22I', nome:'Rivelatore movimento IR volumetrico (linea Facile)', batteria:'Litio 3V — da verificare sigla', autonomia:4},
+    {codice:'RLA001T', nome:'Rivelatore movimento IR 12m/90° (linea Alma)', batteria:'Litio 3V — da verificare sigla', autonomia:4},
+  ],
+  apertura: [
+    {codice:'RLA261T', nome:'Rivelatore apertura bianco (Expert/Sepio) — porte/finestre', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah (versioni più recenti a innesto rapido: verificare se BatLi26)', autonomia:4},
+    {codice:'RLA262T', nome:'Rivelatore apertura marrone (Expert/Sepio) — porte/finestre/persiane', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah (versioni più recenti a innesto rapido: verificare se BatLi26)', autonomia:4},
+    {codice:'RLA271T / RLA272T', nome:'Rivelatore apertura bianco/marrone — variante', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah (versioni più recenti a innesto rapido: verificare se BatLi26)', autonomia:4},
+    {codice:'S165-22X', nome:'Sensore compatto (linea Daitem Lynx / Expert) — verificare tipo esatto', batteria:'BatLi28 / BatLi38 — Litio 3V 2,4Ah', autonomia:4},
+  ],
+  sirena: [
+    {codice:'S404-22I', nome:'Sirena da interno', batteria:'BatLi22 — Litio', autonomia:4},
+    {codice:'S404-22X', nome:'Sirena da esterno con lampeggiante Xeno, IP54', batteria:'BatLi22 — Litio', autonomia:4},
+  ],
+  telecomando: [
+    {codice:'RLA604T', nome:'Telecomando (linea Facile)', batteria:'Pila a bottone CR2430 — da verificare', autonomia:null},
+    {codice:'RLF001T', nome:'Telecomando 4 pulsanti / 4 funzioni (linea Alma)', batteria:'Pila a bottone CR2430 — da verificare', autonomia:null},
+  ],
+  combinatore: [
+    {codice:'S492-22X', nome:'Scheda combinatore telefonico (interna alla centrale Facile)', batteria:'Alimentata da centrale', autonomia:null},
+    {codice:'S590-22X', nome:'Combinatore telefonico PSTN/ADSL Video', batteria:'Alimentata da centrale', autonomia:null},
+  ],
+  tastiera: [
+    {codice:'908-21X', nome:'Tastiera / pila esterna', batteria:'908-21X / alimentatore 910-21X', autonomia:4},
+  ],
+  altro: [
+    {codice:'PERSONALIZZATO', nome:'Altro modello (inserimento libero)', batteria:'', autonomia:null},
+  ],
+};
+const CATEGORIE_LABEL = {
+  centrale:'Centrale', movimento:'Rivelatore di movimento', apertura:'Rivelatore di apertura',
+  sirena:'Sirena', telecomando:'Telecomando', combinatore:'Combinatore telefonico',
+  tastiera:'Tastiera', altro:'Altro / personalizzato'
+};
+const BATTERIE_RIFERIMENTO = [
+  {sigla:'BatLi01', desc:'3,6V — 4Ah — Sensori di movimento volumetrici e contatti magnetici, serie più vecchie (Logisty 2)'},
+  {sigla:'BatLi02', desc:'7,2V — 13Ah — Modulo doppio alta capacità, per centrali e sirene da esterno'},
+  {sigla:'BatLi03', desc:'7,2V — 5Ah — Vecchie tastiere di comando e alcune sirene da interno'},
+  {sigla:'BatLi04', desc:'3,6V — 2Ah — Pila singola con connettore, sensori volumetrici e contatti d\'apertura'},
+  {sigla:'BatLi05', desc:'3,6V — 4Ah — Tastiere di comando multifunzione e ricevitori'},
+  {sigla:'BatLi06', desc:'7,2V — 5,8Ah — Sirene da interno e tastiere con sintesi vocale'},
+  {sigla:'BatLi22', desc:'2x3,6V — 13Ah — Pacco doppio più diffuso, centrali e sirene linea Expert/Alma'},
+  {sigla:'BatLi23', desc:'Litio — vari rivelatori, 4 anni autonomia dichiarata'},
+  {sigla:'BatLi25', desc:'3,6V — 4Ah — Rivelatori movimento con fotocamera integrata e combinatori telefonici'},
+  {sigla:'BatLi26', desc:'3,6V — 2Ah — Innesto rapido, sensori di presenza e contatti magnetici linea Expert (versione moderna)'},
+  {sigla:'BatLi28 / BatLi38', desc:'3V — 2,4Ah — Litio ultima generazione, linea Daitem Lynx e sensori compatti serie Hager S165-22X'},
+  {sigla:'BatLi31', desc:'3,6V — 1Ah — Rivelatori apertura RLA261T/262T/271T/272T (confermata da scheda prodotto)'},
+  {sigla:'CR2430', desc:'Pila a bottone 3V — telecomandi (generalmente 2 pz, da verificare)'},
+  {sigla:'CR2032', desc:'Pila a bottone 3V — alcuni accessori/tastiere'},
+];
+
+/* ===================== Router minimale ===================== */
+function go(hash){ location.hash = hash; }
+window.addEventListener('hashchange', render);
+window.addEventListener('DOMContentLoaded', render);
+
+function parseRoute(){
+  const h = location.hash.slice(1) || '/';
+  const parts = h.split('/').filter(Boolean);
+  return parts;
+}
+
+/* ===================== Helpers stato batteria ===================== */
+function statoBatteria(sensore){
+  if(!sensore.dataSostituzione || !sensore.autonomiaAnni) return {stato:'neutro', label:'—'};
+  const d = new Date(sensore.dataSostituzione);
+  const scadenza = new Date(d); scadenza.setFullYear(scadenza.getFullYear()+Number(sensore.autonomiaAnni));
+  const oggi = new Date();
+  const mesiRestanti = (scadenza - oggi)/(1000*60*60*24*30);
+  if(mesiRestanti < 0) return {stato:'danger', label:'Scaduta — '+fmtData(scadenza)};
+  if(mesiRestanti < 6) return {stato:'warn', label:'In scadenza — '+fmtData(scadenza)};
+  return {stato:'ok', label:'OK fino a '+fmtData(scadenza)};
+}
+function fmtData(d){
+  if(!(d instanceof Date)) d = new Date(d);
+  if(isNaN(d)) return '—';
+  return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function today(){ return new Date().toISOString().slice(0,10); }
+
+/* ===================== Render principale ===================== */
+function render(){
+  const parts = parseRoute();
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  if(parts.length===0){ renderListaClienti(app); return; }
+  if(parts[0]==='cliente' && parts[1]){ renderCliente(app, parts[1]); return; }
+  if(parts[0]==='centrale' && parts[1]){ renderCentrale(app, parts[1]); return; }
+  if(parts[0]==='batterie'){ renderRiferimentoBatterie(app); return; }
+  renderListaClienti(app);
+}
+
+function topbar(opts){
+  const {title, sub, back, actLabel, actFn} = opts;
+  const el = document.createElement('header');
+  el.className='topbar';
+  el.innerHTML = `
+    ${back? `<button class="back" id="btn-back">‹</button>`:''}
+    <div class="title"><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:''}</div>
+    ${actLabel? `<button class="act" id="btn-act">${actLabel}</button>`:''}
+  `;
+  if(back) el.querySelector('#btn-back').onclick = ()=>history.back();
+  if(actLabel) el.querySelector('#btn-act').onclick = actFn;
+  return el;
+}
+
+function showToast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 1800);
+}
+
+/* ===================== Vista: Lista Clienti ===================== */
+function renderListaClienti(app){
+  app.appendChild(topbar({title:'Manutenzioni Antifurto', sub:'Ten Solutions · Hager Logisty'}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  const searchWrap = document.createElement('div'); searchWrap.className='search';
+  searchWrap.innerHTML = `<input id="search-cli" placeholder="Cerca cliente, indirizzo...">`;
+  wrap.appendChild(searchWrap);
+
+  const list = document.createElement('div');
+  wrap.appendChild(list);
+
+  function draw(filter){
+    list.innerHTML='';
+    let clienti = [...DB.clienti].sort((a,b)=>a.nome.localeCompare(b.nome));
+    if(filter){
+      const f = filter.toLowerCase();
+      clienti = clienti.filter(c => (c.nome+' '+(c.indirizzo||'')).toLowerCase().includes(f));
+    }
+    if(clienti.length===0){
+      const e = document.createElement('div'); e.className='empty';
+      e.innerHTML = `<div class="big">🛡️</div><p><strong>Nessun cliente</strong></p><p>Tocca + per aggiungere la prima scheda cliente.</p>`;
+      list.appendChild(e); return;
+    }
+    clienti.forEach(c=>{
+      const nCentrali = DB.centrali.filter(x=>x.clienteId===c.id).length;
+      const row = document.createElement('div'); row.className='rowlink';
+      row.innerHTML = `<div class="main"><div class="t">${escapeHtml(c.nome)}</div>
+        <div class="s">${escapeHtml(c.indirizzo||'—')} · ${nCentrali} central${nCentrali===1?'e':'i'}</div></div>
+        <div class="chev">›</div>`;
+      row.onclick = ()=> go('#/cliente/'+c.id);
+      list.appendChild(row);
+    });
+  }
+  draw('');
+  searchWrap.querySelector('input').addEventListener('input', e=>draw(e.target.value));
+
+  const footer = document.createElement('div'); footer.className='footer-actions';
+  footer.innerHTML = `<button class="btn" id="btn-export">Esporta backup (JSON)</button>
+    <button class="btn" id="btn-import">Importa backup</button>
+    <button class="btn" id="btn-ref">Rif. batterie</button>`;
+  wrap.appendChild(footer);
+  app.appendChild(wrap);
+
+  footer.querySelector('#btn-ref').onclick = ()=> go('#/batterie');
+  footer.querySelector('#btn-export').onclick = exportBackup;
+  footer.querySelector('#btn-import').onclick = importBackup;
+
+  const fab = document.createElement('button'); fab.className='fab'; fab.textContent='+';
+  fab.onclick = ()=> modalCliente();
+  app.appendChild(fab);
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ===================== Modal: Nuovo/Modifica Cliente ===================== */
+function modalCliente(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica cliente':'Nuova scheda cliente'}</h2>
+    <label>Nome / Ragione sociale *</label><input id="f-nome" value="${existing?escapeHtml(existing.nome):''}">
+    <label>Indirizzo</label><input id="f-indirizzo" value="${existing?escapeHtml(existing.indirizzo||''):''}">
+    <label>Telefono</label><input id="f-telefono" value="${existing?escapeHtml(existing.telefono||''):''}">
+    <label>Note</label><textarea id="f-note" rows="3">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.onclick = e=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#btn-cancel').onclick = ()=>overlay.remove();
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const nome = overlay.querySelector('#f-nome').value.trim();
+    if(!nome){ showToast('Inserisci il nome cliente'); return; }
+    const data = {
+      nome, indirizzo: overlay.querySelector('#f-indirizzo').value.trim(),
+      telefono: overlay.querySelector('#f-telefono').value.trim(),
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+    if(isEdit){ Object.assign(existing, data); }
+    else { data.id = uid(); DB.clienti.push(data); }
+    saveDB(); overlay.remove(); render();
+    if(!isEdit) go('#/cliente/'+data.id);
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare il cliente e tutte le centrali/sensori/interventi associati?')) return;
+      const centraliIds = DB.centrali.filter(c=>c.clienteId===existing.id).map(c=>c.id);
+      DB.sensori = DB.sensori.filter(s=>!centraliIds.includes(s.centraleId));
+      DB.interventi = DB.interventi.filter(i=>!centraliIds.includes(i.centraleId));
+      DB.centrali = DB.centrali.filter(c=>c.clienteId!==existing.id);
+      DB.clienti = DB.clienti.filter(c=>c.id!==existing.id);
+      saveDB(); overlay.remove(); go('#/');
+    };
+  }
+}
+
+/* ===================== Vista: Scheda Cliente ===================== */
+function renderCliente(app, clienteId){
+  const cliente = DB.clienti.find(c=>c.id===clienteId);
+  if(!cliente){ go('#/'); return; }
+  app.appendChild(topbar({title:cliente.nome, sub:cliente.indirizzo||'', back:true, actLabel:'Modifica', actFn:()=>modalCliente(cliente)}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  if(cliente.telefono || cliente.note){
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `${cliente.telefono?`<div>📞 ${escapeHtml(cliente.telefono)}</div>`:''}
+      ${cliente.note?`<div style="margin-top:6px;color:var(--ink-dim);font-size:13.5px">${escapeHtml(cliente.note)}</div>`:''}`;
+    wrap.appendChild(card);
+  }
+
+  const sh = document.createElement('div'); sh.className='sectionhead';
+  sh.innerHTML = `<h2>Centrali installate</h2><button class="addbtn" id="btn-add-centrale">+ Centrale</button>`;
+  wrap.appendChild(sh);
+
+  const centrali = DB.centrali.filter(c=>c.clienteId===clienteId);
+  if(centrali.length===0){
+    const e = document.createElement('div'); e.className='empty';
+    e.innerHTML = `<p>Nessuna centrale registrata.</p>`;
+    wrap.appendChild(e);
+  } else {
+    centrali.forEach(cn=>{
+      const sensori = DB.sensori.filter(s=>s.centraleId===cn.id);
+      const stati = sensori.map(statoBatteria);
+      const worst = stati.some(s=>s.stato==='danger') ? 'danger' : stati.some(s=>s.stato==='warn') ? 'warn' : (sensori.length?'ok':'neutro');
+      const cat = CATALOGO.centrale.find(x=>x.codice===cn.modello);
+      const row = document.createElement('div'); row.className='rowlink';
+      row.innerHTML = `<div class="main">
+        <div class="t"><span class="led ${worst}"></span>${escapeHtml(cn.modello)}${cat?'':''}</div>
+        <div class="s">Matricola ${escapeHtml(cn.matricola||'—')} · ${sensori.length} sensori</div></div>
+        <div class="chev">›</div>`;
+      row.onclick = ()=> go('#/centrale/'+cn.id);
+      wrap.appendChild(row);
+    });
+  }
+  app.appendChild(wrap);
+  sh.querySelector('#btn-add-centrale').onclick = ()=> modalCentrale(null, clienteId);
+}
+
+/* ===================== Modal: Nuova/Modifica Centrale ===================== */
+function modalCentrale(existing, clienteId){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const opts = CATALOGO.centrale.map(m=>`<option value="${m.codice}" ${existing&&existing.modello===m.codice?'selected':''}>${m.codice} — ${m.nome}</option>`).join('')
+    + `<option value="PERSONALIZZATO" ${existing&&existing.modello==='PERSONALIZZATO'?'selected':''}>Altro / personalizzato</option>`;
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica centrale':'Nuova centrale'}</h2>
+    <label>Modello</label>
+    <select id="f-modello">${opts}</select>
+    <div id="f-modello-custom-wrap" style="display:none"><label>Modello (testo libero)</label><input id="f-modello-custom" value="${existing&&existing.modelloCustom?escapeHtml(existing.modelloCustom):''}"></div>
+    <label>Matricola / codice centrale</label><input id="f-matricola" class="mono" value="${existing?escapeHtml(existing.matricola||''):''}">
+    <label>Data installazione</label><input type="date" id="f-data" value="${existing?existing.dataInstallazione||'':''}">
+    <label>Zone / gruppi</label><input id="f-zone" value="${existing?escapeHtml(existing.zone||''):''}">
+    <label>Note</label><textarea id="f-note" rows="3">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  const selModello = overlay.querySelector('#f-modello');
+  const customWrap = overlay.querySelector('#f-modello-custom-wrap');
+  function syncCustom(){ customWrap.style.display = selModello.value==='PERSONALIZZATO' ? 'block':'none'; }
+  selModello.onchange = syncCustom; syncCustom();
+
+  overlay.onclick = e=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#btn-cancel').onclick = ()=>overlay.remove();
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const data = {
+      modello: selModello.value,
+      modelloCustom: overlay.querySelector('#f-modello-custom').value.trim(),
+      matricola: overlay.querySelector('#f-matricola').value.trim(),
+      dataInstallazione: overlay.querySelector('#f-data').value,
+      zone: overlay.querySelector('#f-zone').value.trim(),
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+    if(isEdit){ Object.assign(existing, data); }
+    else { data.id = uid(); data.clienteId = clienteId; DB.centrali.push(data); }
+    saveDB(); overlay.remove(); render();
+    if(!isEdit) go('#/centrale/'+data.id);
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare questa centrale e tutti i sensori/interventi associati?')) return;
+      DB.sensori = DB.sensori.filter(s=>s.centraleId!==existing.id);
+      DB.interventi = DB.interventi.filter(i=>i.centraleId!==existing.id);
+      DB.centrali = DB.centrali.filter(c=>c.id!==existing.id);
+      saveDB(); overlay.remove(); go('#/cliente/'+clienteId);
+    };
+  }
+}
+
+/* ===================== Vista: Scheda Centrale ===================== */
+function renderCentrale(app, centraleId){
+  const centrale = DB.centrali.find(c=>c.id===centraleId);
+  if(!centrale){ go('#/'); return; }
+  const cliente = DB.clienti.find(c=>c.id===centrale.clienteId);
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+
+  app.appendChild(topbar({title:modName, sub:(cliente?cliente.nome+' · ':'')+'Matr. '+(centrale.matricola||'—'), back:true, actLabel:'Modifica', actFn:()=>modalCentrale(centrale, centrale.clienteId)}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  const infoCard = document.createElement('div'); infoCard.className='card';
+  infoCard.innerHTML = `
+    <div><strong>Installata:</strong> ${centrale.dataInstallazione?fmtData(centrale.dataInstallazione):'—'}</div>
+    ${centrale.zone?`<div><strong>Zone/gruppi:</strong> ${escapeHtml(centrale.zone)}</div>`:''}
+    ${centrale.note?`<div style="margin-top:6px;color:var(--ink-dim);font-size:13.5px">${escapeHtml(centrale.note)}</div>`:''}
+  `;
+  wrap.appendChild(infoCard);
+
+  // Sensori
+  const sh1 = document.createElement('div'); sh1.className='sectionhead';
+  sh1.innerHTML = `<h2>Sensori / periferiche</h2><button class="addbtn" id="btn-add-sensore">+ Sensore</button>`;
+  wrap.appendChild(sh1);
+
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId);
+  if(sensori.length===0){
+    const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun sensore registrato.</p>';
+    wrap.appendChild(e);
+  } else {
+    sensori.forEach(s=>{
+      const st = statoBatteria(s);
+      const row = document.createElement('div'); row.className='card';
+      row.style.cursor='pointer';
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div>
+            <div style="font-weight:600;font-size:15px">${escapeHtml(CATEGORIE_LABEL[s.categoria]||s.categoria)}</div>
+            <div class="s mono" style="font-size:12.5px;color:var(--ink-dim);margin-top:2px">${escapeHtml(s.modello==='PERSONALIZZATO'?(s.modelloCustom||''):s.modello)} ${s.zona?'· zona '+escapeHtml(s.zona):''}</div>
+            <div class="mono" style="font-size:12px;color:var(--ink-faint);margin-top:4px">Codice: ${escapeHtml(s.codice||'—')}</div>
+          </div>
+          <span class="badge ${st.stato}"><span class="led ${st.stato}" style="margin-right:5px"></span>${st.label==='—'?'N/D':st.label}</span>
+        </div>
+        <div style="margin-top:8px;font-size:12.5px;color:var(--ink-dim)">Batteria: ${escapeHtml(s.batteria||'—')}</div>
+      `;
+      row.onclick = ()=> modalSensore(s, centraleId);
+      wrap.appendChild(row);
+    });
+  }
+
+  // Storico interventi
+  const sh2 = document.createElement('div'); sh2.className='sectionhead';
+  sh2.innerHTML = `<h2>Storico manutenzioni</h2><button class="addbtn" id="btn-add-intervento">+ Intervento</button>`;
+  wrap.appendChild(sh2);
+
+  const interventi = DB.interventi.filter(i=>i.centraleId===centraleId).sort((a,b)=>b.data.localeCompare(a.data));
+  if(interventi.length===0){
+    const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun intervento registrato.</p>';
+    wrap.appendChild(e);
+  } else {
+    const tableWrap = document.createElement('div'); tableWrap.className='card'; tableWrap.style.overflowX='auto';
+    let rows = '';
+    interventi.forEach(i=>{
+      const battDesc = (i.batterie||[]).map(b=>{
+        const sens = DB.sensori.find(s=>s.id===b.sensoreId);
+        return (sens? (CATEGORIE_LABEL[sens.categoria]||sens.categoria) : 'Sensore')+' → '+b.tipoBatteria;
+      }).join('<br>') || '—';
+      rows += `<tr>
+        <td class="mono">${fmtData(i.data)}</td>
+        <td>${escapeHtml(i.tipo)}</td>
+        <td>${battDesc}</td>
+        <td>${escapeHtml(i.tecnico||'—')}</td>
+      </tr>`;
+    });
+    tableWrap.innerHTML = `<table><thead><tr><th>Data</th><th>Tipo</th><th>Batterie sostituite</th><th>Tecnico</th></tr></thead><tbody>${rows}</tbody></table>`;
+    wrap.appendChild(tableWrap);
+  }
+
+  app.appendChild(wrap);
+  sh1.querySelector('#btn-add-sensore').onclick = ()=> modalSensore(null, centraleId);
+  sh2.querySelector('#btn-add-intervento').onclick = ()=> modalIntervento(centraleId);
+}
+
+/* ===================== Modal: Nuovo/Modifica Sensore ===================== */
+function modalSensore(existing, centraleId){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const catOpts = Object.keys(CATALOGO).map(k=>`<option value="${k}" ${existing&&existing.categoria===k?'selected':''}>${CATEGORIE_LABEL[k]}</option>`).join('');
+
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica sensore':'Nuovo sensore'}</h2>
+    <label>Categoria</label>
+    <select id="f-cat">${catOpts}</select>
+    <label>Modello</label>
+    <select id="f-modello"></select>
+    <div id="f-modello-custom-wrap" style="display:none"><label>Modello (testo libero)</label><input id="f-modello-custom"></div>
+    <label>Codice identificativo / matricola sensore</label><input id="f-codice" class="mono" value="${existing?escapeHtml(existing.codice||''):''}">
+    <label>Zona</label><input id="f-zona" value="${existing?escapeHtml(existing.zona||''):''}">
+    <label>Tipo batteria</label><input id="f-batteria" list="batterie-datalist" value="${existing?escapeHtml(existing.batteria||''):''}">
+    <datalist id="batterie-datalist">${BATTERIE_RIFERIMENTO.map(b=>`<option value="${b.sigla}">`).join('')}</datalist>
+    <label>Autonomia dichiarata (anni)</label><input type="number" id="f-autonomia" min="0" step="1" value="${existing?(existing.autonomiaAnni??''):''}">
+    <label>Data ultima sostituzione batteria</label><input type="date" id="f-datasost" value="${existing?existing.dataSostituzione||'':''}">
+    <label>Note</label><textarea id="f-note" rows="2">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  const selCat = overlay.querySelector('#f-cat');
+  const selModello = overlay.querySelector('#f-modello');
+  const customWrap = overlay.querySelector('#f-modello-custom-wrap');
+  const customInput = overlay.querySelector('#f-modello-custom');
+  const fBatteria = overlay.querySelector('#f-batteria');
+  const fAutonomia = overlay.querySelector('#f-autonomia');
+
+  function populateModelli(preselect){
+    const cat = selCat.value;
+    const items = CATALOGO[cat] || [];
+    selModello.innerHTML = items.map(m=>`<option value="${m.codice}">${m.codice} — ${m.nome}</option>`).join('')
+      + `<option value="PERSONALIZZATO">Altro / personalizzato</option>`;
+    if(preselect) selModello.value = preselect;
+    syncFromModello();
+  }
+  function syncFromModello(){
+    const cat = selCat.value;
+    const items = CATALOGO[cat] || [];
+    const found = items.find(m=>m.codice===selModello.value);
+    customWrap.style.display = selModello.value==='PERSONALIZZATO' ? 'block':'none';
+    if(customWrap.style.display==='block'){ customInput.value = existing&&existing.modelloCustom?existing.modelloCustom:''; }
+    if(found && !isEdit){ fBatteria.value = found.batteria||''; fAutonomia.value = found.autonomia??''; }
+  }
+  selCat.onchange = ()=>populateModelli(null);
+  selModello.onchange = syncFromModello;
+  populateModelli(existing?existing.modello:null);
+  if(existing) selCat.value = existing.categoria, populateModelli(existing.modello);
+
+  overlay.onclick = e=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#btn-cancel').onclick = ()=>overlay.remove();
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const data = {
+      categoria: selCat.value,
+      modello: selModello.value,
+      modelloCustom: customInput.value.trim(),
+      codice: overlay.querySelector('#f-codice').value.trim(),
+      zona: overlay.querySelector('#f-zona').value.trim(),
+      batteria: fBatteria.value.trim(),
+      autonomiaAnni: fAutonomia.value ? Number(fAutonomia.value) : null,
+      dataSostituzione: overlay.querySelector('#f-datasost').value,
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+    if(isEdit){ Object.assign(existing, data); }
+    else { data.id = uid(); data.centraleId = centraleId; DB.sensori.push(data); }
+    saveDB(); overlay.remove(); render();
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare questo sensore?')) return;
+      DB.sensori = DB.sensori.filter(s=>s.id!==existing.id);
+      saveDB(); overlay.remove(); render();
+    };
+  }
+}
+
+/* ===================== Modal: Registra Intervento ===================== */
+function modalIntervento(centraleId){
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId);
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const battRefOpts = BATTERIE_RIFERIMENTO.map(b=>`<option value="${b.sigla}">${b.sigla}</option>`).join('')+'<option value="Altro">Altro</option>';
+
+  const checklines = sensori.map(s=>{
+    const label = `${CATEGORIE_LABEL[s.categoria]||s.categoria} — ${s.codice||s.modello}`;
+    const defaultBatt = (s.batteria||'').split(' ')[0] || '';
+    return `<div class="checkline" data-sensore="${s.id}">
+      <input type="checkbox" class="chk-batt">
+      <div class="lbl">${escapeHtml(label)}</div>
+      <select class="sel-batt">${battRefOpts}</select>
+    </div>`;
+  }).join('');
+
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Nuovo intervento</h2>
+    <label>Data intervento</label><input type="date" id="f-data" value="${today()}">
+    <label>Tecnico</label><input id="f-tecnico" placeholder="Nome tecnico">
+    <label>Tipo intervento</label>
+    <select id="f-tipo">
+      <option>Manutenzione ordinaria</option>
+      <option>Sostituzione batterie</option>
+      <option>Verifica / test funzionale</option>
+      <option>Riparazione guasto</option>
+      <option>Aggiornamento centrale</option>
+      <option>Altro</option>
+    </select>
+    ${sensori.length? `<label>Batterie sostituite in questo intervento</label>${checklines}<div class="hint">Seleziona i sensori e il tipo di batteria montata.</div>` : '<div class="hint" style="margin-top:14px">Nessun sensore registrato su questa centrale.</div>'}
+    <label>Note</label><textarea id="f-note" rows="3" placeholder="Dettagli intervento, anomalie riscontrate..."></textarea>
+    <div class="modal-footer">
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Registra</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.onclick = e=>{ if(e.target===overlay) overlay.remove(); };
+  overlay.querySelector('#btn-cancel').onclick = ()=>overlay.remove();
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const data = overlay.querySelector('#f-data').value;
+    if(!data){ showToast('Inserisci la data'); return; }
+    const battSostituite = [];
+    overlay.querySelectorAll('.checkline').forEach(line=>{
+      const chk = line.querySelector('.chk-batt');
+      if(chk.checked){
+        const sensoreId = line.getAttribute('data-sensore');
+        const tipoBatteria = line.querySelector('.sel-batt').value;
+        battSostituite.push({sensoreId, tipoBatteria});
+        const sens = DB.sensori.find(s=>s.id===sensoreId);
+        if(sens){ sens.dataSostituzione = data; }
+      }
+    });
+    const intervento = {
+      id: uid(), centraleId, data,
+      tecnico: overlay.querySelector('#f-tecnico').value.trim(),
+      tipo: overlay.querySelector('#f-tipo').value,
+      batterie: battSostituite,
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+    DB.interventi.push(intervento);
+    saveDB(); overlay.remove(); render();
+    showToast('Intervento registrato');
+  };
+}
+
+/* ===================== Vista: Riferimento batterie ===================== */
+function renderRiferimentoBatterie(app){
+  app.appendChild(topbar({title:'Riferimento batterie', sub:'Gamma Hager Logisty', back:true}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+  const card = document.createElement('div'); card.className='card';
+  let rows = BATTERIE_RIFERIMENTO.map(b=>`<tr><td class="mono">${b.sigla}</td><td>${b.desc}</td></tr>`).join('');
+  card.innerHTML = `<table><thead><tr><th>Sigla</th><th>Utilizzo</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="hint" style="margin-top:12px">Nota: per i rivelatori di movimento delle linee Facile/Alma (S161-22I, RLA001T) verificare sempre l'etichetta sulla batteria montata — a seconda della generazione dell'impianto può trattarsi di BatLi01 (serie più vecchie Logisty 2), BatLi04 (standard) o BatLi26 (versione moderna a innesto rapido). In caso di sostituzione, togliere le batterie esaurite e attendere almeno 5 minuti prima di installare le nuove.</div>`;
+  wrap.appendChild(card);
+  app.appendChild(wrap);
+}
+
+/* ===================== Export / Import backup ===================== */
+async function exportBackup(){
+  const json = JSON.stringify(DB, null, 2);
+  const filename = 'backup_manutenzioni_'+today()+'.json';
+
+  // Dentro l'APK (Capacitor): salva su filesystem nativo e apre il foglio di condivisione.
+  if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
+    try{
+      const { Filesystem, Directory } = Capacitor.Plugins;
+      await Filesystem.writeFile({ path: filename, data: json, directory: Directory.Cache, encoding: 'utf8' });
+      const uriResult = await Filesystem.getUri({ path: filename, directory: Directory.Cache });
+      if(Capacitor.Plugins.Share){
+        await Capacitor.Plugins.Share.share({ title:'Backup manutenzioni', url: uriResult.uri });
+      } else {
+        showToast('Backup salvato: '+uriResult.uri);
+      }
+      return;
+    }catch(e){ console.error(e); showToast('Errore salvataggio backup: '+e.message); return; }
+  }
+
+  // Fallback browser / PWA: download classico.
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Backup esportato');
+}
+function importBackup(){
+  const input = document.createElement('input');
+  input.type='file'; input.accept='application/json';
+  input.onchange = ()=>{
+    const file = input.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const data = JSON.parse(reader.result);
+        if(!data.clienti || !data.centrali || !data.sensori || !data.interventi) throw new Error('formato non valido');
+        if(!confirm('Importare questo backup? I dati attuali verranno sovrascritti.')) return;
+        DB = data; saveDB(); render();
+        showToast('Backup importato');
+      }catch(e){ alert('File non valido: '+e.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+/* ===================== Service worker registration ===================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
