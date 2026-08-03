@@ -34,6 +34,9 @@ jobs:
       - name: Sync Capacitor
         run: npx cap sync android
 
+      - name: Configura firma release nel build.gradle (automatico, nessun progetto locale richiesto)
+        run: python3 scripts/patch-android-signing.py
+
       - name: Build APK debug
         working-directory: android
         run: ./gradlew assembleDebug
