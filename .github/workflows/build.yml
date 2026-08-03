@@ -55,6 +55,16 @@ jobs:
           cd android
           ./gradlew assembleRelease
 
+      - name: Diagnostica keystore (checksum, da confrontare col file originale)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "Lunghezza base64 ricevuta: ${#KEYSTORE_BASE64} caratteri"
+          echo "$KEYSTORE_BASE64" | base64 -d > /tmp/check.keystore
+          echo "Dimensione file decodificato: $(stat -c%s /tmp/check.keystore) byte"
+          echo "SHA256 del file decodificato:"
+          sha256sum /tmp/check.keystore
+
       - name: Sign APK
         id: sign
         uses: r0adkll/sign-android-release@v1
