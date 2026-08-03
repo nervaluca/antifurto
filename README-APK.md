@@ -49,7 +49,21 @@ npx capacitor-assets generate --iconBackgroundColor "#14171c" --splashBackground
 ```
 Servono un `icon.png` (1024x1024) e uno `splash.png` (2732x2732) sorgente da mettere in `assets/`.
 
-## 6. Firma per release (quando pronto per distribuzione)
-Il workflow qui genera solo `assembleDebug` (installabile ma non firmato per il Play Store).
-Per una release firmata vanno aggiunti keystore + credenziali come secrets del repo, come già fatto
-eventualmente per gli altri progetti Android.
+## 6. Firma per release (automatica, nessun progetto Android locale richiesto)
+
+Il workflow costruisce sia un APK **debug** (sempre) sia un APK **release firmato** (solo se nel repo sono presenti i 4 secrets: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD` — Settings → Secrets and variables → Actions → Repository secrets).
+
+`KEYSTORE_BASE64` deve contenere il tuo file `.keystore`/`.jks` codificato in base64. Per generarlo da un keystore esistente:
+```bash
+base64 -i tuo-file.keystore | tr -d '\n' > keystore_base64.txt
+```
+poi incolla il contenuto di `keystore_base64.txt` come valore del secret.
+
+**Non serve avere il progetto Android in locale.** Lo script `scripts/patch-android-signing.py` (incluso nel repo) viene eseguito automaticamente dal workflow subito dopo che Capacitor genera la cartella `android/` in CI, e inserisce da solo il blocco `signingConfigs` dentro `android/app/build.gradle` prima della build. È idempotente: se lo esegui più volte non duplica nulla.
+
+Se invece un giorno lavori con il progetto Android in locale (es. apri `android/` in Android Studio per debug), lo stesso script funziona anche lì: basta lanciarlo a mano con `python3 scripts/patch-android-signing.py` dalla root del repo dopo aver fatto `npx cap add android`.
+
+Se i 4 secrets non sono presenti, gli step di release vengono automaticamente saltati e il workflow produce solo il debug come prima.
+
+Se i 4 secrets non sono presenti, gli step di release vengono automaticamente saltati e il workflow produce solo il debug come prima — quindi non rompe nulla se non li hai ancora configurati ovunque.
+
