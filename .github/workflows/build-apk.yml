@@ -1,4 +1,3 @@
-
 name: Build APK
 
 on:
@@ -39,8 +38,31 @@ jobs:
         working-directory: android
         run: ./gradlew assembleDebug
 
-      - name: Carica APK come artifact
+      - name: Carica APK debug come artifact
         uses: actions/upload-artifact@v4
         with:
           name: manutenzioni-antifurto-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      # --- Release firmata: gira solo se i secrets sono presenti nel repo ---
+      - name: Decodifica keystore
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
+
+      - name: Build APK release firmato
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        working-directory: android
+        env:
+          RELEASE_STORE_FILE: release.keystore
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease
+
+      - name: Carica APK release come artifact
+        if: ${{ secrets.KEYSTORE_BASE64 != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: manutenzioni-antifurto-release
+          path: android/app/build/outputs/apk/release/app-release.apk
