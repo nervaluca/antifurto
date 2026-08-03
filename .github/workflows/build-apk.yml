@@ -52,6 +52,7 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
+          echo "Lunghezza KEYSTORE_BASE64 ricevuta: ${#KEYSTORE_BASE64} caratteri"
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
