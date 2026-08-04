@@ -29,7 +29,7 @@ jobs:
       - name: Prepara cartella www
         run: |
           mkdir -p www
-          cp index.html manifest.json sw.js icon-192.png icon-512.png www/
+          cp index.html manifest.json sw.js icon-192.png icon-512.png jspdf.umd.min.js www/
 
       - name: Add Android platform
         run: npx cap add android
