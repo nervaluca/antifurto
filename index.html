@@ -1023,10 +1023,10 @@ function renderReport(app, centraleId){
 
       if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
         // In APK: salva su filesystem nativo e apre il foglio di condivisione (visualizza/stampa/invia)
-        const { Filesystem, Directory } = Capacitor.Plugins;
+        const { Filesystem } = Capacitor.Plugins;
         const base64Data = doc.output('datauristring').split(',')[1];
-        await Filesystem.writeFile({ path: filename, data: base64Data, directory: Directory.Cache });
-        const uriResult = await Filesystem.getUri({ path: filename, directory: Directory.Cache });
+        await Filesystem.writeFile({ path: filename, data: base64Data, directory: 'CACHE' });
+        const uriResult = await Filesystem.getUri({ path: filename, directory: 'CACHE' });
         if(Capacitor.Plugins.Share){
           await Capacitor.Plugins.Share.share({ title:'Report stato impianto', url: uriResult.uri });
         } else {
@@ -1082,9 +1082,9 @@ async function exportBackup(){
   // Dentro l'APK (Capacitor): salva su filesystem nativo e apre il foglio di condivisione.
   if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
     try{
-      const { Filesystem, Directory } = Capacitor.Plugins;
-      await Filesystem.writeFile({ path: filename, data: json, directory: Directory.Cache, encoding: 'utf8' });
-      const uriResult = await Filesystem.getUri({ path: filename, directory: Directory.Cache });
+      const { Filesystem } = Capacitor.Plugins;
+      await Filesystem.writeFile({ path: filename, data: json, directory: 'CACHE', encoding: 'utf8' });
+      const uriResult = await Filesystem.getUri({ path: filename, directory: 'CACHE' });
       if(Capacitor.Plugins.Share){
         await Capacitor.Plugins.Share.share({ title:'Backup manutenzioni', url: uriResult.uri });
       } else {
