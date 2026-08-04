@@ -128,6 +128,7 @@ tr:last-child td{border-bottom:none}
 <body>
 <div id="app"></div>
 
+<script src="jspdf.umd.min.js"></script>
 <script>
 /* ===================== DB (localStorage) ===================== */
 const LOGO_B64 = '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';
@@ -855,6 +856,107 @@ function generaTestoReport(cliente, centrale, sensori){
   return t;
 }
 
+function generaPdfReport(cliente, centrale, sensori){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const marginX = 15;
+  let y = 20;
+
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Report stato impianto antifurto', marginX, y); y += 8;
+
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.setDrawColor(180); doc.line(marginX, y, pageWidth-marginX, y); y += 7;
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text(cliente ? cliente.nome : '—', marginX, y); y += 6;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  if(cliente && cliente.indirizzo){ doc.text(cliente.indirizzo, marginX, y); y += 6; }
+  y += 2;
+
+  doc.setFont(undefined, 'bold'); doc.text('Centrale:', marginX, y);
+  doc.setFont(undefined, 'normal'); doc.text(String(modName), marginX + 22, y); y += 6;
+  doc.setFont(undefined, 'bold'); doc.text('Matricola:', marginX, y);
+  doc.setFont(undefined, 'normal'); doc.text(String(centrale.matricola||'—'), marginX + 22, y); y += 6;
+  if(centrale.dataInstallazione){
+    doc.setFont(undefined, 'bold'); doc.text('Installata il:', marginX, y);
+    doc.setFont(undefined, 'normal'); doc.text(fmtData(centrale.dataInstallazione), marginX + 22, y); y += 6;
+  }
+  if(centrale.zone){
+    doc.setFont(undefined, 'bold'); doc.text('Zone/gruppi:', marginX, y);
+    doc.setFont(undefined, 'normal'); doc.text(String(centrale.zone), marginX + 22, y); y += 6;
+  }
+  y += 4;
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text('Componenti e stato batterie', marginX, y); y += 7;
+  doc.setDrawColor(180); doc.line(marginX, y-4, pageWidth-marginX, y-4);
+
+  const rows = sensori.map(s=>{
+    const st = statoBatteria(s);
+    return {
+      etichetta: s.etichetta || CATEGORIE_LABEL[s.categoria] || s.categoria,
+      categoria: CATEGORIE_LABEL[s.categoria] || s.categoria,
+      batteria: s.batteria || '—',
+      installato: s.dataInstallazione ? fmtData(s.dataInstallazione) : '—',
+      sostituito: s.dataSostituzione ? fmtData(s.dataSostituzione) : '—',
+      stato: st.label==='—' ? 'N/D' : st.label,
+      coloreStato: st.stato,
+    };
+  });
+
+  const colX = { etichetta: marginX, categoria: marginX+38, batteria: marginX+72, installato: marginX+110, sostituito: marginX+135, stato: marginX+160 };
+  const tableWidth = pageWidth - marginX*2;
+  const rowH = 8;
+
+  function drawHeader(){
+    doc.setFillColor(13,21,34);
+    doc.rect(marginX, y, tableWidth, rowH, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont(undefined,'bold');
+    doc.text('Etichetta', colX.etichetta+1, y+5.5);
+    doc.text('Categoria', colX.categoria+1, y+5.5);
+    doc.text('Batteria', colX.batteria+1, y+5.5);
+    doc.text('Install.', colX.installato+1, y+5.5);
+    doc.text('Sostit.', colX.sostituito+1, y+5.5);
+    doc.text('Stato', colX.stato+1, y+5.5);
+    y += rowH;
+  }
+  drawHeader();
+
+  doc.setFontSize(8); doc.setFont(undefined,'normal');
+  if(rows.length===0){
+    doc.setTextColor(120);
+    doc.text('Nessun componente registrato', marginX+1, y+5.5);
+    y += rowH;
+  }
+  rows.forEach((r, i)=>{
+    if(y + rowH > 280){ doc.addPage(); y = 20; drawHeader(); doc.setFontSize(8); doc.setFont(undefined,'normal'); }
+    if(i % 2 === 1){ doc.setFillColor(240,240,240); doc.rect(marginX, y, tableWidth, rowH, 'F'); }
+    doc.setTextColor(30,30,30);
+    doc.text(String(r.etichetta).slice(0,22), colX.etichetta+1, y+5.5);
+    doc.text(String(r.categoria).slice(0,20), colX.categoria+1, y+5.5);
+    doc.text(String(r.batteria).slice(0,22), colX.batteria+1, y+5.5);
+    doc.text(String(r.installato), colX.installato+1, y+5.5);
+    doc.text(String(r.sostituito), colX.sostituito+1, y+5.5);
+    if(r.coloreStato==='danger') doc.setTextColor(200,30,30);
+    else if(r.coloreStato==='warn') doc.setTextColor(180,120,0);
+    else if(r.coloreStato==='ok') doc.setTextColor(30,140,60);
+    else doc.setTextColor(120,120,120);
+    doc.text(String(r.stato).slice(0,22), colX.stato+1, y+5.5);
+    doc.setTextColor(30,30,30);
+    y += rowH;
+  });
+  y += 8;
+
+  doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('Generato il ' + fmtData(today()), marginX, 290);
+
+  return doc;
+}
+
 function renderReport(app, centraleId){
   const centrale = DB.centrali.find(c=>c.id===centraleId);
   if(!centrale){ go('#/'); return; }
@@ -906,12 +1008,41 @@ function renderReport(app, centraleId){
   }
 
   const footer = document.createElement('div'); footer.className='footer-actions no-print';
-  footer.innerHTML = `<button class="btn primary" id="btn-print">Stampa / PDF</button>
+  footer.innerHTML = `<button class="btn primary" id="btn-print">Genera PDF</button>
     <button class="btn" id="btn-share">Condividi testo</button>`;
   wrap.appendChild(footer);
   app.appendChild(wrap);
 
-  footer.querySelector('#btn-print').onclick = ()=> window.print();
+  footer.querySelector('#btn-print').onclick = async ()=>{
+    const btn = footer.querySelector('#btn-print');
+    const originalLabel = btn.textContent;
+    btn.textContent = 'Genero PDF...'; btn.disabled = true;
+    try{
+      const doc = generaPdfReport(cliente, centrale, sensori);
+      const filename = 'report_'+(cliente?cliente.nome.replace(/\s+/g,'_'):'impianto')+'_'+today()+'.pdf';
+
+      if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
+        // In APK: salva su filesystem nativo e apre il foglio di condivisione (visualizza/stampa/invia)
+        const { Filesystem, Directory } = Capacitor.Plugins;
+        const base64Data = doc.output('datauristring').split(',')[1];
+        await Filesystem.writeFile({ path: filename, data: base64Data, directory: Directory.Cache });
+        const uriResult = await Filesystem.getUri({ path: filename, directory: Directory.Cache });
+        if(Capacitor.Plugins.Share){
+          await Capacitor.Plugins.Share.share({ title:'Report stato impianto', url: uriResult.uri });
+        } else {
+          showToast('PDF salvato: '+uriResult.uri);
+        }
+      } else {
+        // Browser/PWA: download diretto
+        doc.save(filename);
+        showToast('PDF scaricato');
+      }
+    }catch(e){
+      console.error(e);
+      showToast('Errore nella generazione del PDF: '+e.message);
+    }
+    btn.textContent = originalLabel; btn.disabled = false;
+  };
   footer.querySelector('#btn-share').onclick = async ()=>{
     const testo = generaTestoReport(cliente, centrale, sensori);
     if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Share){
