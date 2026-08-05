@@ -150,7 +150,9 @@ function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(
 const SYNC_API_KEY = 'OOmheFTfX3iEbvldVUpQbfwxUCsZfuyv8TpGiL7ytamOhb0F';
 const SYNC_IS_NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
 // PWA: percorso relativo (stesso dominio). APK: URL assoluto, perché la webview gira su https://localhost.
-const SYNC_ENDPOINT = 'https://iw1fzr.it/hager/backend/sync.php';
+const SYNC_ENDPOINT = SYNC_IS_NATIVE
+  ? 'https://www.iw1fzr.it/hager/backend/sync.php'
+  : location.origin + '/hager/backend/sync.php';
 const SYNC_LASTSYNC_KEY = 'hagerman_lastsync_v1';
 let syncInProgress = false;
 let syncTimer = null;

@@ -1,4 +1,4 @@
-const CACHE = 'hagerman-v1';
+const CACHE = 'hagerman-v2';
 const ASSETS = ['./', './index.html', './manifest.json', './jspdf.umd.min.js'];
 
 self.addEventListener('install', e=>{
@@ -14,6 +14,10 @@ self.addEventListener('activate', e=>{
 });
 
 self.addEventListener('fetch', e=>{
+  // Non intercettare MAI richieste non-GET (es. POST di sincronizzazione): la Cache API
+  // non le supporta e tentare di metterle in cache le faceva fallire silenziosamente.
+  if(e.request.method !== 'GET') return;
+
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request).then(res=>{
       const resClone = res.clone();
