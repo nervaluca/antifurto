@@ -163,7 +163,7 @@ function getLastSync(){ return Number(localStorage.getItem(SYNC_LASTSYNC_KEY) ||
 async function syncNow(silent){
   if(syncInProgress) return false;
   syncInProgress = true;
-  updateSyncIndicator('loading');
+  if(!silent) updateSyncIndicator('loading');
   try{
     const since = getLastSync();
     const changes = {
@@ -186,8 +186,9 @@ async function syncNow(silent){
     lastSyncStatus = 'ok';
     updateSyncIndicator('ok');
     if(!silent) showToast('Sincronizzato');
-    // Aggiorna la vista solo se non c'è un modal aperto, per non interrompere chi sta scrivendo
-    if(!document.querySelector('.modal-overlay')) render();
+    const cambiamentiRicevuti = Object.values(data.changes||{}).some(arr=>Array.isArray(arr) && arr.length>0);
+    // Aggiorna la vista solo se non c'è un modal aperto E (non è un sync silenzioso oppure sono arrivate modifiche vere)
+    if(!document.querySelector('.modal-overlay') && (!silent || cambiamentiRicevuti)) render();
     return true;
   }catch(e){
     console.error('Errore sincronizzazione:', e);
@@ -397,11 +398,16 @@ function renderListaClienti(app){
 
   const syncRow = document.createElement('div');
   syncRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12.5px;color:var(--ink-dim)';
-  syncRow.innerHTML = `<span id="sync-indicator"><span class="led neutro"></span>In attesa di sincronizzazione...</span>
+  const initialState = lastSyncStatus || (getLastSync() ? 'ok' : null);
+  const initialHtml = initialState==='ok'
+    ? '<span class="led ok"></span>Sincronizzato alle '+new Date(getLastSync()).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})
+    : initialState==='error'
+      ? '<span class="led danger"></span>Sync non riuscita — offline?'
+      : '<span class="led neutro"></span>In attesa di sincronizzazione...';
+  syncRow.innerHTML = `<span id="sync-indicator">${initialHtml}</span>
     <button id="btn-sync-now" style="background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:700;padding:4px">🔄 Sincronizza</button>`;
   wrap.appendChild(syncRow);
   syncRow.querySelector('#btn-sync-now').onclick = ()=> syncNow(false);
-  updateSyncIndicator(lastSyncStatus || (getLastSync() ? 'ok' : null));
 
   const searchWrap = document.createElement('div'); searchWrap.className='search';
   searchWrap.innerHTML = `<input id="search-cli" placeholder="Cerca cliente, indirizzo...">`;
