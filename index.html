@@ -145,6 +145,90 @@ let DB = loadDB();
 function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
+/* ===================== Sincronizzazione multi-dispositivo ===================== */
+// Deve combaciare esattamente con API_KEY in backend/config.php sul server.
+const SYNC_API_KEY = 'OOmheFTfX3iEbvldVUpQbfwxUCsZfuyv8TpGiL7ytamOhb0F';
+const SYNC_IS_NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+// PWA: percorso relativo (stesso dominio). APK: URL assoluto, perché la webview gira su https://localhost.
+const SYNC_ENDPOINT = SYNC_IS_NATIVE ? 'https://iw1fzr.it/hager/backend/sync.php' : './backend/sync.php';
+const SYNC_LASTSYNC_KEY = 'hagerman_lastsync_v1';
+let syncInProgress = false;
+let syncTimer = null;
+let lastSyncStatus = null; // 'ok' | 'error' | null
+
+function getLastSync(){ return Number(localStorage.getItem(SYNC_LASTSYNC_KEY) || 0); }
+
+async function syncNow(silent){
+  if(syncInProgress) return false;
+  syncInProgress = true;
+  updateSyncIndicator('loading');
+  try{
+    const since = getLastSync();
+    const changes = {
+      clienti: DB.clienti.filter(r=>(r.updated_at||0) > since),
+      centrali: DB.centrali.filter(r=>(r.updated_at||0) > since),
+      sensori: DB.sensori.filter(r=>(r.updated_at||0) > since),
+      interventi: DB.interventi.filter(r=>(r.updated_at||0) > since),
+    };
+    const res = await fetch(SYNC_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ apiKey: SYNC_API_KEY, since, changes }),
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    mergeSyncedChanges(data.changes || {});
+    localStorage.setItem(SYNC_LASTSYNC_KEY, String(data.serverTime));
+    saveDB();
+    lastSyncStatus = 'ok';
+    updateSyncIndicator('ok');
+    if(!silent) showToast('Sincronizzato');
+    // Aggiorna la vista solo se non c'è un modal aperto, per non interrompere chi sta scrivendo
+    if(!document.querySelector('.modal-overlay')) render();
+    return true;
+  }catch(e){
+    console.error('Errore sincronizzazione:', e);
+    lastSyncStatus = 'error';
+    updateSyncIndicator('error');
+    if(!silent) showToast('Sincronizzazione non riuscita (offline?)');
+    return false;
+  }finally{
+    syncInProgress = false;
+  }
+}
+
+function mergeSyncedChanges(changes){
+  const tables = { clienti: DB.clienti, centrali: DB.centrali, sensori: DB.sensori, interventi: DB.interventi };
+  for(const key in tables){
+    const list = tables[key];
+    (changes[key] || []).forEach(remote=>{
+      const idx = list.findIndex(l=>l.id===remote.id);
+      if(idx===-1){ list.push(remote); }
+      else if((remote.updated_at||0) >= (list[idx].updated_at||0)){ list[idx] = remote; }
+    });
+  }
+}
+
+function scheduleSync(){
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>syncNow(true), 4000);
+}
+
+function updateSyncIndicator(state){
+  const el = document.getElementById('sync-indicator');
+  if(!el) return;
+  const now = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  if(state==='loading'){ el.innerHTML = '<span class="led neutro"></span>Sincronizzazione...'; }
+  else if(state==='ok'){ el.innerHTML = '<span class="led ok"></span>Sincronizzato alle '+now; }
+  else if(state==='error'){ el.innerHTML = '<span class="led danger"></span>Sync non riuscita — offline?'; }
+}
+
+// Sync automatico: all'avvio, ogni 45s, e quando l'app torna in primo piano
+setTimeout(()=>syncNow(true), 1200);
+setInterval(()=>syncNow(true), 45000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow(true); });
+
 /* ===================== Catalogo Hager Logisty ===================== */
 // Codici e batterie verificati sul Listino ufficiale Hager Sicurezza (v.02 2013) e sulle schede prodotto Logisty Expert/Sepio.
 // Ogni voce riporta il componente SINGOLO (non kit) con la batteria realmente abbinata secondo il listino.
@@ -309,6 +393,14 @@ function renderListaClienti(app){
   app.appendChild(topbar({title:'Manutenzioni Antifurto', showLogo:true}));
   const wrap = document.createElement('div'); wrap.className='wrap';
 
+  const syncRow = document.createElement('div');
+  syncRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12.5px;color:var(--ink-dim)';
+  syncRow.innerHTML = `<span id="sync-indicator"><span class="led neutro"></span>In attesa di sincronizzazione...</span>
+    <button id="btn-sync-now" style="background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:700;padding:4px">🔄 Sincronizza</button>`;
+  wrap.appendChild(syncRow);
+  syncRow.querySelector('#btn-sync-now').onclick = ()=> syncNow(false);
+  updateSyncIndicator(lastSyncStatus || (getLastSync() ? 'ok' : null));
+
   const searchWrap = document.createElement('div'); searchWrap.className='search';
   searchWrap.innerHTML = `<input id="search-cli" placeholder="Cerca cliente, indirizzo...">`;
   wrap.appendChild(searchWrap);
@@ -318,7 +410,7 @@ function renderListaClienti(app){
 
   function draw(filter){
     list.innerHTML='';
-    let clienti = [...DB.clienti].sort((a,b)=>a.nome.localeCompare(b.nome));
+    let clienti = DB.clienti.filter(c=>!c.deleted).sort((a,b)=>a.nome.localeCompare(b.nome));
     if(filter){
       const f = filter.toLowerCase();
       clienti = clienti.filter(c => (c.nome+' '+(c.indirizzo||'')).toLowerCase().includes(f));
@@ -329,7 +421,7 @@ function renderListaClienti(app){
       list.appendChild(e); return;
     }
     clienti.forEach(c=>{
-      const nCentrali = DB.centrali.filter(x=>x.clienteId===c.id).length;
+      const nCentrali = DB.centrali.filter(x=>x.clienteId===c.id && !x.deleted).length;
       const row = document.createElement('div'); row.className='rowlink';
       row.innerHTML = `<div class="main"><div class="t">${escapeHtml(c.nome)}</div>
         <div class="s">${escapeHtml(c.indirizzo||'—')} · ${nCentrali} central${nCentrali===1?'e':'i'}</div></div>
@@ -370,14 +462,17 @@ function wireAutosave(overlay, {existing, list, buildData, extra, minContent}){
   let timer = null;
   function persist(){
     const data = buildData();
+    data.updated_at = Date.now();
     if(!state.record){
       if(!minContent(data)) return;
+      data.deleted = false;
       state.record = Object.assign({id: uid()}, extra||{}, data);
       list.push(state.record);
     } else {
       Object.assign(state.record, data);
     }
     saveDB();
+    scheduleSync();
     const ind = overlay.querySelector('.autosave-indicator');
     if(ind) ind.textContent = 'Salvato automaticamente ✓';
   }
@@ -386,9 +481,12 @@ function wireAutosave(overlay, {existing, list, buildData, extra, minContent}){
   state.finalize = persist;
   state.discardIfUnsaved = function(){
     if(state.isNew && state.record){
-      const idx = list.indexOf(state.record);
-      if(idx>-1) list.splice(idx,1);
+      // Non rimuoviamo il record: lo segnamo eliminato così, se era già stato
+      // sincronizzato nel frattempo, la cancellazione si propaga agli altri dispositivi.
+      state.record.deleted = true;
+      state.record.updated_at = Date.now();
       saveDB();
+      scheduleSync();
     }
   };
   return state;
@@ -440,12 +538,13 @@ function modalCliente(existing){
   if(isEdit){
     overlay.querySelector('#btn-del').onclick = ()=>{
       if(!confirm('Eliminare il cliente e tutte le centrali/sensori/interventi associati?')) return;
+      const now = Date.now();
       const centraliIds = DB.centrali.filter(c=>c.clienteId===existing.id).map(c=>c.id);
-      DB.sensori = DB.sensori.filter(s=>!centraliIds.includes(s.centraleId));
-      DB.interventi = DB.interventi.filter(i=>!centraliIds.includes(i.centraleId));
-      DB.centrali = DB.centrali.filter(c=>c.id!==existing.id);
-      DB.clienti = DB.clienti.filter(c=>c.id!==existing.id);
-      saveDB(); overlay.remove(); go('#/');
+      DB.sensori.forEach(s=>{ if(centraliIds.includes(s.centraleId)){ s.deleted=true; s.updated_at=now; } });
+      DB.interventi.forEach(i=>{ if(centraliIds.includes(i.centraleId)){ i.deleted=true; i.updated_at=now; } });
+      DB.centrali.forEach(c=>{ if(c.clienteId===existing.id){ c.deleted=true; c.updated_at=now; } });
+      existing.deleted = true; existing.updated_at = now;
+      saveDB(); scheduleSync(); overlay.remove(); go('#/');
     };
   }
 }
@@ -468,14 +567,14 @@ function renderCliente(app, clienteId){
   sh.innerHTML = `<h2>Centrali installate</h2><button class="addbtn" id="btn-add-centrale">+ Centrale</button>`;
   wrap.appendChild(sh);
 
-  const centrali = DB.centrali.filter(c=>c.clienteId===clienteId);
+  const centrali = DB.centrali.filter(c=>c.clienteId===clienteId && !c.deleted);
   if(centrali.length===0){
     const e = document.createElement('div'); e.className='empty';
     e.innerHTML = `<p>Nessuna centrale registrata.</p>`;
     wrap.appendChild(e);
   } else {
     centrali.forEach(cn=>{
-      const sensori = DB.sensori.filter(s=>s.centraleId===cn.id);
+      const sensori = DB.sensori.filter(s=>s.centraleId===cn.id && !s.deleted);
       const stati = sensori.map(statoBatteria);
       const worst = stati.some(s=>s.stato==='danger') ? 'danger' : stati.some(s=>s.stato==='warn') ? 'warn' : (sensori.length?'ok':'neutro');
       const cat = CATALOGO.centrale.find(x=>x.codice===cn.modello);
@@ -547,10 +646,11 @@ function modalCentrale(existing, clienteId){
   if(isEdit){
     overlay.querySelector('#btn-del').onclick = ()=>{
       if(!confirm('Eliminare questa centrale e tutti i sensori/interventi associati?')) return;
-      DB.sensori = DB.sensori.filter(s=>s.centraleId!==existing.id);
-      DB.interventi = DB.interventi.filter(i=>i.centraleId!==existing.id);
-      DB.centrali = DB.centrali.filter(c=>c.id!==existing.id);
-      saveDB(); overlay.remove(); go('#/cliente/'+clienteId);
+      const now = Date.now();
+      DB.sensori.forEach(s=>{ if(s.centraleId===existing.id){ s.deleted=true; s.updated_at=now; } });
+      DB.interventi.forEach(i=>{ if(i.centraleId===existing.id){ i.deleted=true; i.updated_at=now; } });
+      existing.deleted = true; existing.updated_at = now;
+      saveDB(); scheduleSync(); overlay.remove(); go('#/cliente/'+clienteId);
     };
   }
 }
@@ -578,7 +678,7 @@ function renderCentrale(app, centraleId){
   sh1.innerHTML = `<h2>Componenti impianto</h2><button class="addbtn" id="btn-add-sensore">+ Componente</button>`;
   wrap.appendChild(sh1);
 
-  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId);
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
   if(sensori.length===0){
     const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun componente registrato.</p>';
     wrap.appendChild(e);
@@ -608,7 +708,7 @@ function renderCentrale(app, centraleId){
   sh2.innerHTML = `<h2>Storico manutenzioni</h2><button class="addbtn" id="btn-add-intervento">+ Intervento</button>`;
   wrap.appendChild(sh2);
 
-  const interventi = DB.interventi.filter(i=>i.centraleId===centraleId).sort((a,b)=>b.data.localeCompare(a.data));
+  const interventi = DB.interventi.filter(i=>i.centraleId===centraleId && !i.deleted).sort((a,b)=>b.data.localeCompare(a.data));
   if(interventi.length===0){
     const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun intervento registrato.</p>';
     wrap.appendChild(e);
@@ -644,7 +744,7 @@ function renderCentrale(app, centraleId){
 
 /* ===================== Modal: Nuovo/Modifica Sensore ===================== */
 function suggerisciEtichetta(categoria, centraleId){
-  const stessaCategoria = DB.sensori.filter(s=>s.centraleId===centraleId && s.categoria===categoria);
+  const stessaCategoria = DB.sensori.filter(s=>s.centraleId===centraleId && s.categoria===categoria && !s.deleted);
   const label = CATEGORIE_LABEL[categoria] || categoria;
   if(categoria==='sensore' || categoria==='movimento' || categoria==='apertura'){
     return 'Sensore '+(stessaCategoria.length+1);
@@ -740,15 +840,15 @@ function modalSensore(existing, centraleId){
   if(isEdit){
     overlay.querySelector('#btn-del').onclick = ()=>{
       if(!confirm('Eliminare questo componente?')) return;
-      DB.sensori = DB.sensori.filter(s=>s.id!==existing.id);
-      saveDB(); overlay.remove(); render();
+      existing.deleted = true; existing.updated_at = Date.now();
+      saveDB(); scheduleSync(); overlay.remove(); render();
     };
   }
 }
 
 /* ===================== Modal: Registra Intervento ===================== */
 function modalIntervento(centraleId){
-  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId);
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
   const overlay = document.createElement('div'); overlay.className='modal-overlay';
   const battRefOpts = BATTERIE_RIFERIMENTO.map(b=>`<option value="${b.sigla}">${b.sigla}</option>`).join('')+'<option value="Altro">Altro</option>';
 
@@ -805,7 +905,7 @@ function modalIntervento(centraleId){
   function applicaSostituzioniBatterie(batterie, data){
     batterie.forEach(b=>{
       const sens = DB.sensori.find(s=>s.id===b.sensoreId);
-      if(sens) sens.dataSostituzione = data;
+      if(sens){ sens.dataSostituzione = data; sens.updated_at = Date.now(); }
     });
   }
   const auto = wireAutosave(overlay, {
@@ -961,7 +1061,7 @@ function renderReport(app, centraleId){
   const centrale = DB.centrali.find(c=>c.id===centraleId);
   if(!centrale){ go('#/'); return; }
   const cliente = DB.clienti.find(c=>c.id===centrale.clienteId);
-  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId);
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
   const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
 
   app.appendChild(topbar({title:'Report stato impianto', sub:cliente?cliente.nome:'', back:true}));
