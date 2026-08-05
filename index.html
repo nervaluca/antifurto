@@ -150,7 +150,7 @@ function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(
 const SYNC_API_KEY = 'OOmheFTfX3iEbvldVUpQbfwxUCsZfuyv8TpGiL7ytamOhb0F';
 const SYNC_IS_NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
 // PWA: percorso relativo (stesso dominio). APK: URL assoluto, perché la webview gira su https://localhost.
-const SYNC_ENDPOINT = SYNC_IS_NATIVE ? 'https://iw1fzr.it/hager/backend/sync.php' : './backend/sync.php';
+const SYNC_ENDPOINT = 'https://iw1fzr.it/hager/backend/sync.php';
 const SYNC_LASTSYNC_KEY = 'hagerman_lastsync_v1';
 let syncInProgress = false;
 let syncTimer = null;
@@ -172,7 +172,7 @@ async function syncNow(silent){
     };
     const res = await fetch(SYNC_ENDPOINT, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type':'text/plain'},
       body: JSON.stringify({ apiKey: SYNC_API_KEY, since, changes }),
     });
     if(!res.ok) throw new Error('HTTP ' + res.status);
@@ -191,7 +191,7 @@ async function syncNow(silent){
     console.error('Errore sincronizzazione:', e);
     lastSyncStatus = 'error';
     updateSyncIndicator('error');
-    if(!silent) showToast('Sincronizzazione non riuscita (offline?)');
+    if(!silent) showToast('Sync fallita: '+e.message);
     return false;
   }finally{
     syncInProgress = false;
