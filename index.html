@@ -142,6 +142,22 @@ function loadDB(){
   return {clienti:[], centrali:[], sensori:[], interventi:[]};
 }
 let DB = loadDB();
+
+// Migrazione una tantum: i record creati prima che esistesse la sincronizzazione
+// non hanno "updated_at" e resterebbero invisibili al motore di sync per sempre.
+// Li timbriamo adesso così vengono inclusi nel prossimo invio al server.
+(function migraRecordSenzaTimestamp(){
+  let migrati = 0;
+  const now = Date.now();
+  ['clienti','centrali','sensori','interventi'].forEach(tabella=>{
+    (DB[tabella]||[]).forEach(rec=>{
+      if(!rec.updated_at){ rec.updated_at = now; migrati++; }
+      if(rec.deleted === undefined) rec.deleted = false;
+    });
+  });
+  if(migrati>0) saveDB();
+})();
+
 function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
@@ -206,9 +222,14 @@ function mergeSyncedChanges(changes){
   for(const key in tables){
     const list = tables[key];
     (changes[key] || []).forEach(remote=>{
+      // Normalizza "deleted" a booleano vero: alcuni driver database restituiscono "0"/"1"
+      // come stringa, e in JavaScript la stringa "0" è "vera" (truthy) — senza questa
+      // conversione i record risulterebbero cancellati per errore dopo ogni sincronizzazione.
+      remote.deleted = (remote.deleted===true || remote.deleted===1 || remote.deleted==='1');
+      remote.updated_at = Number(remote.updated_at) || 0;
       const idx = list.findIndex(l=>l.id===remote.id);
       if(idx===-1){ list.push(remote); }
-      else if((remote.updated_at||0) >= (list[idx].updated_at||0)){ list[idx] = remote; }
+      else if(remote.updated_at >= (list[idx].updated_at||0)){ list[idx] = remote; }
     });
   }
 }
@@ -331,6 +352,16 @@ const BATTERIE_RIFERIMENTO = [
 function go(hash){ location.hash = hash; }
 window.addEventListener('hashchange', render);
 window.addEventListener('DOMContentLoaded', render);
+
+// Se un'altra scheda/finestra dello stesso browser scrive dati (es. crea un cliente),
+// li recepiamo subito qui, così questa scheda non rischia di sovrascriverli con la
+// propria copia in memoria (più vecchia) durante il prossimo salvataggio o sync.
+window.addEventListener('storage', e=>{
+  if(e.key === DB_KEY && e.newValue){
+    try{ DB = JSON.parse(e.newValue); }catch(err){ return; }
+    if(!document.querySelector('.modal-overlay')) render();
+  }
+});
 
 function parseRoute(){
   const h = location.hash.slice(1) || '/';
