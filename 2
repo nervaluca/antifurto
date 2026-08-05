@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manutenzioni Antifurto — Ten Solutions</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d1522">
+<style>
+:root{
+  --bg:#0d1522;
+  --panel:#152238;
+  --panel-2:#1e2f4d;
+  --line:#2c4066;
+  --ink:#e9eef7;
+  --ink-dim:#8fa2c0;
+  --ink-faint:#66789a;
+  --accent:#9edc3a;
+  --accent-dim:#8bc72f;
+  --ok:#9edc3a;
+  --warn:#e8b34d;
+  --danger:#ff6b6b;
+  --hvtext:#0d1522;
+  --r:14px;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+body{padding-bottom:24px;min-height:100vh;line-height:1.35}
+h1,h2,h3{font-family:var(--sans);font-weight:800;letter-spacing:-0.01em;margin:0}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:12px;font-size:15px;width:100%;outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+label{display:block;font-size:.8rem;color:var(--ink-dim);margin:14px 0 6px}
+.mono{font-family:var(--mono)}
+
+/* Top bar */
+header.topbar{position:sticky;top:0;z-index:20;background:rgba(13,21,34,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:center;gap:10px}
+header.topbar .back{background:none;border:none;color:var(--accent);font-size:22px;padding:0 4px;line-height:1}
+header.topbar .title{flex:1;overflow:hidden;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+header.topbar .title h1{font-size:1.15rem;letter-spacing:.02em}
+header.topbar .title .sub{font-size:12px;color:var(--ink-dim);font-family:var(--mono);width:100%}
+header.topbar .logo{height:26px;width:auto;border-radius:5px;align-self:center}
+header.topbar .tag{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--hvtext);background:var(--accent);padding:3px 8px;border-radius:6px}
+header.topbar .act{background:var(--panel-2);border:1px solid var(--line);color:var(--accent);border-radius:10px;padding:8px 12px;font-size:14px;font-weight:700}
+
+.wrap{padding:14px 16px 24px;max-width:640px;margin:0 auto}
+
+/* LED status dot */
+.led{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;flex-shrink:0}
+.led.ok{background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.led.warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+.led.danger{background:var(--danger);box-shadow:0 0 6px var(--danger)}
+.led.neutro{background:var(--ink-faint)}
+
+/* Card / list row */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.rowlink{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.rowlink .main{flex:1;min-width:0}
+.rowlink .main .t{font-size:15.5px;font-weight:700}
+.rowlink .main .s{font-size:12.5px;color:var(--ink-dim);margin-top:2px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rowlink .chev{color:var(--ink-faint);font-size:20px}
+.rowlink:active{background:var(--panel-2)}
+
+.empty{text-align:center;padding:60px 20px;color:var(--ink-dim)}
+.empty .big{font-size:38px;margin-bottom:10px}
+.empty p{margin:6px 0}
+
+/* Search */
+.search{position:relative;margin-bottom:14px}
+.search input{padding-left:36px}
+.search::before{content:"⌕";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-faint);font-size:16px}
+
+/* Sezioni con bottone dashed in stile "addrow" */
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:22px 0 10px}
+.sectionhead h2{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-dim);font-weight:700}
+.sectionhead .addbtn{background:transparent;border:1px dashed var(--line);color:var(--accent);border-radius:10px;padding:8px 13px;font-size:13px;font-weight:700}
+.sectionhead .addbtn:active{background:var(--panel-2)}
+.addrow-wide{width:100%;background:transparent;border:1px dashed var(--line);color:var(--accent);padding:13px;border-radius:10px;font-weight:700;font-size:.92rem;margin-top:4px}
+.addrow-wide:active{background:var(--panel-2)}
+
+/* Chips / badges */
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.03em}
+.badge.ok{background:rgba(158,220,58,.14);color:var(--ok)}
+.badge.warn{background:rgba(232,179,77,.14);color:var(--warn)}
+.badge.danger{background:rgba(255,107,107,.14);color:var(--danger)}
+.badge.neutro{background:rgba(143,162,192,.14);color:var(--ink-dim)}
+
+/* Table for history */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11px;text-transform:uppercase;color:var(--ink-faint);border-bottom:1px solid var(--line);padding:6px 8px;letter-spacing:.03em}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:flex;align-items:flex-end}
+.modal{background:var(--bg);width:100%;max-height:92vh;overflow-y:auto;border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding:8px 18px 28px;animation:up .2s ease-out}
+@keyframes up{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:36px;height:4px;background:var(--line);border-radius:3px;margin:10px auto 4px}
+.modal h2{font-size:1.05rem;padding:10px 0 4px}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.btn{border-radius:12px;padding:14px;font-size:15px;font-weight:800;border:none;background:var(--panel-2);color:var(--ink);flex:1;text-align:center;border:1px solid var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--hvtext)}
+.btn.primary:active{background:var(--accent-dim)}
+.btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.checkline{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 12px;margin-bottom:8px}
+.checkline input[type=checkbox]{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent)}
+.checkline .lbl{flex:1;font-size:14px}
+.checkline select{width:130px;flex-shrink:0}
+.hint{font-size:.78rem;color:var(--ink-faint);margin-top:4px;line-height:1.4}
+.toast{position:fixed;left:50%;top:20px;transform:translateX(-50%) translateY(-160%);background:var(--ok);color:#062015;padding:11px 18px;border-radius:10px;font-weight:700;font-size:.9rem;z-index:100;transition:transform .3s;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:88vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.footer-actions{display:flex;gap:10px;margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.footer-actions .btn{font-size:13px;padding:10px}
+
+@media print{
+  header.topbar, .no-print{display:none !important}
+  html,body{background:#fff;color:#000}
+  .card,.rowlink{background:#fff;border:1px solid #999;color:#000;break-inside:avoid}
+  .badge.ok{background:#e6f7d9;color:#2f7a0e}
+  .badge.warn{background:#fdf1d8;color:#8a5a00}
+  .badge.danger{background:#fde2e2;color:#a10000}
+  table th,table td{color:#000;border-color:#ccc}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+/* ===================== DB (localStorage) ===================== */
+const LOGO_B64 = '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCABpAKADASIAAhEBAxEB/8QAHQAAAAcBAQEAAAAAAAAAAAAAAAQFBgcICQECA//EAEEQAAAFAwIDBAgDBgMJAAAAAAECAwQFAAYRBxIIITETIkFRCRQVMlJhcYFCkaEWM2JykqIjscEkNENTgrLR4fD/xAAdAQAABwEBAQAAAAAAAAAAAAACAwQFBgcIAAEJ/8QANREAAQMDAwIEBQIEBwAAAAAAAQACAwQFEQYSITFBBxNRcRRhgZGhCBUiMkKxFiMkYtHh8P/aAAwDAQACEQMRAD8A0FoUKFfKoKcIUKpzxc8dL3h5v5ra8PBtpdYzUHDg7g4l2iIiAAXH8tRnb3pDtW7qQItDaVGkUDm2lOggscv51eNv8JNRV9vjuTAxsTxkFzg3j6pudXRtcWdwtEqFZ8Xvx86v6bxyT+5dLUohoqfsyKuN5SmP5UUsP0iGqWpqrpK2dNW0wdqUorA2Mc2wB6Zpyb4L6mdTGsHl+WP6t7cffKK/c4N+znPstEqFUPl+MzXiDQBZ3oyqBBzzImqYP0pkwvpO74mroYQaVkMiv3TkrYqG84HE4mxiiIvBzUlRE+aAxva0ZOHtOPsUM3CIdQfstJqFFo8yizFuosAFVOQDHKHQBxzozmqLmidC8xu6hOQOUKFChSdeoUKFCuwuQoUK+S65G5BMcwFAPOhsYXnDUBzwwbndF9c0kyc4kyymHeP4hSZJzp18kRHaXzDqFIpjGVMJjDkw9Rqb2+xk4kn+yr666mawGKk6+q+zt4o5V3n5iNfOuUOQhU3YxrG7GDAVbSSPleXvOSVIVcOYEyGMPIChka7RV+19fYuG28Uu2TMTeXqXIYyFUvBtErS/plaMKpppRoFG6+a3XlqxeLP2lGJyJ2cK0XDKagJdztTB4l5dPPdVx2UQ0i2ybdo3SbIEDBSJEAoAH2pNsmzWNh2swgo7d6o0JtKJuph8TD8xpdXWK3ROob3ShkasPUWp62/1TYI5CIWgNY3OAAOOnzSSGFsbS7ueqzL9K3qKEhd1s2e3WMdNmgL1cpRAS7jci/cMG/Opo9F7pz+zOiz64liADibdmEptolEUyd0P13VQLiWvNTWHiKuF4gcFiuX4M2pg55IUdhfyxWyejFlpadaWW1bySYpgxZJpmDw3Y54+9ap8Saj/AAh4c22wxnEkwBd6+p/KYqQedVul7BPc6ZDgAGKAl8QEKpTdehkTK8fsDJMWJG7dvHe13pSFyQVgExSm+u7aNXYxTUjNPWEVf0vdpVVVpKSQTbn3jyIQm7AF/qGsr6V1TUWEVREjgZI3NGO5Pr9Mp9nhE235FOvpRCano63I5V/KPEY9iiGVHDg4ETIHzEaPGOUnUcVln6STiQNeF1oWHb8gY8RFHEz8UT91Rf4R8wL/AJ5px8PtEVWvLw2hiJbH1c7GcD/tFVVUKZm4rRS0NbrFv2SFhb90Rko9L1QRcFE4/QPGnzWHfCdpZJas6ptmETdJLTctSg59d7XYrgB/CHiNbT2bAr2vANo51Lu5xdEuDPXgFA6n5AAVJ/FXw7t+g6qOCkqDIXDkEcj556Y/KLoqt1SMuGEu0M18FXKaJBMsqVIPM4gAUyp/VGCYukmRZpim4WNsTKK5dxz/AAlDxGqaobNW3B2IIiR6r2tuMFDHvlP07p1yE0iyAc5OfwKFNd8+UkDD2g93wL4UXE51DmOcciPjSLP3lBWqgKsxLso0nPm4WAgY+o4qwrXYS3DYo97/AGyqnuN8qLgS1vDPRLIBivCa6ap1CkUIcSDgxSjkSj8/KkILiYXPbq7yEkEpNoOAMqxU3mEmf8QCbe9u25xjnmox099q/tE6TemVFt6049mETUBYCpe03AgIgHNH/ZBSDHQxeo7+6EygtLxHI+c7S3jB4Kj23jKnAKGKFCmBEqQKFChVFBaTQqLuJrUANM9ELsmwV7JYjI6SIgbA7z90P86lGqGelU1ECLsW3bRbq7VpNwLpYuOqZPd/uN+lWt4aWN2oNT0dHjLdwJ9hyUhrZPKhJVQOCewFdTuJG3U1iisg1XGRcqHLuLtJ3sD9Tcq2x2gAAAcgAMAFZz+if06A5buvVYmQwSObGHz5mP8A6VozVofqAvYuGpRb4jllO0N+vUpFa48RF/quCNN6+r9hNOLYez8+9TYxjQu5RU49fkXzH5V7vO8I6yYBzLyZjlbIBnYkQTnUN4EKUOph8qyF4yOKK6dbbqPDvo9xb8FHK7kItcokVE3gdUPix4eGah/hj4cVOvLgGuO2Bn857+wSisq207DzypC4hvSUXPezh7EWGmNvQRtyIOz/AO8ql8/4PtVK3bpV+4UXXUMquoYTHUOORMI+Oa+Vdr6p6a0jZ9J0oprVCGep7n3Kg81Q+Y5kOUYjnzmLckctHCjZwmIGIqkbaYoh0GtkeCHVGcvvh7h5K53Crx6mqo3TcrGEVFyF903+n2rLbQzQG5tcbkRYRLQyceBw9akFSj2SJPr4j8q1507sVhpvZcXbcYAgyYIlSLn8Q/iN9xyP3rNnj3W2muoordw6cOByOrR6ZSJ92dQZ8rklQvxOaWNS6Z3RcSl53E2cNkzuU9785kwHPdT2hy2+FU14FLRXvvXZk6dqrOmUSmL0wqqGHn0KH3MIVaj0iV9hbWjSMKkptcTTkCCUP+WTmb86hPhAmw0j0slJ1u19duy53YR8MxKXmsJfxh/CAm5/SkOko6iDQk8rgC+U7WHAGAeM59AM/ZNhmkmp3yyHJKtTrxrw8sx03tGy2P7QX2/D/DaFLuI0TH/iqc+X3qq+tnCRe5tPJfUC77z9oTbdLt1mYbhTAPgKPjjHkHhVxdE9GyaexislLqjKXfJj6xJSSveMY4/gL5ELzwHzqKvSG6iGtTRskKgfavNLlSNgcD2Yd41RDSF0NJe6a02VgJLsPkIyXevXoOqbqd4ZKI41X/0btwS6eqkjDpOVDxSrEyqqBjDsKYpgEDfXrWlQ5GqL+jP09Ozh7iu5dLB3Rismygh0IXmbH3x+VXnDlmmHxbqIJtTStgGNoAOPUdUGtcDKQEBoUKFUsmpSFQoUBHFUbhaTQrGr0hWow37xGyjZJbtGUOmSPSAB5AJff++4TF+1a36k3g2sKx5ufdnKmjHtFF+8bG4wByD86w+sxo61g14jUnBu2czUwCipjj729TI1tX9O1pEMtdqGZv8ADCwgH59T+FHbu84ZGO61y4LNOw024eLWZHQFJ47R9ccbw57j8w/Sp1orGRqMTHtWaBATSQSIkUodAAoYo1WVtS3N93vFTXScl7ifynuBgjjDR2TJ1ivBrp7p1PXK5SBb2Y0UcJkEOpgDlWHzdrcGv+qpkkDA6np12JgFU2A3GyPMfLlW03E1bT28NCLzio8naPF45XsifEOOlY18PV7I6Wa4WvOPgArdk9KVftOQEKI7RMP0zW2v09j4bT9yrKQB1S3OAfQDj7lRi7uAlaD0VgIH0YeoTgplZmZioZMo42mOJxEPPlUzae+jhsm3HKbi4ZFxcixMGKgI9kl49dvOrdpy5Zxuk8TcFcoLEA6ahByUQEM8q4AgXORxmohc/E/V9Zvp55dh7hoxj69VXdbcWyHbAMD8pJty1oezotGOhY1tGMkgwRFsmBAD8qWhqM7g1si2t2s7Wgm6lxTqqgesItB7jNLxOqfoH060/wCWk0oqMcvVjARFukZUwiPTBc1XNTS10s7HVmS6Qjr1KY8OccuWaPpFL+/aTV9vCIqbm8O1AggA5DtD8zY/Spx4DNHXbW12N7XGUTKimKEO3UL3W6W7cY4B5nMaqjWtDO+JDiZ2qCY6MnJHXWz3uzQKbdj+nu1rrFRjaFjWrBmmCLVsmVJJMOgFAK0tr+6t0zpyj05T8SFoLv8A3zTxVO8mFsQ7o6NZccft+qXzrd7BZn7ZvEJkalAOhlDczD/2l/6a0tvS4kbRtOXmVxwiybHWMOcdArKHQa3nGufEuzVfYOmu/PIOjGDu7AHdtqOeEVC2nNZqCccQMOPchAt7MbpT2WlnDtYCemujltQoEAjgjUqrjnnKh+8P+dSUWm3G3lHP7od24yA67hgkRRdUgZTT3dCGN4H8dtOUA2j51RV7mnq6+WpqBgvJP3TXM4ukJK7QoD1oUxIlSFTW1Au5/aEQm5jrffXE4OfaDdltyUPMdwhyp01DXFRq8+0W0tVlYpNI0o7cJsmyi/uInOPvm+QVWun6A3K5Q0jGBxccYOQPrjlaNlcGMJKrfxWTWueutqmtaA05dQkMsYDOTrOCCqtjoGM8g61WTTXhX1z0yvmGudnZCizmMcFcJoqLEwoJfDrWjEFoJIrW4jIhqHcBrmcolWGR7cpkd4hkBBH3Nucd3+6l/h1Nd7mzXj29novplZ8qnkpdpQTTHYXYHkON33rVFL4ju0rZJ7dbYoTG07XNw7JJyD3578pidSefIHvcUTsPWO8Z94yYzOmctBmWMBVHZ1kzop+ZjCA5/SpcWcptU9yg4CislLox5OY5P8NNp+/WemyY+Cj4BWc5aRt5nFQyAQMPYZ59slIq+9x29hjadz/7I1Kz/b7kwMCZR6CI8xrOTil4F5hzcb+6bBQB6yeHFdeMKbCiRze8JPMBqdZNircHF6xYR716VjERovpFP1k4pKLH7pAEmcB8X5VY/wC9X7Yq6r8OJYpre8HzGAuaRxg9MqvZ7jUySeY85KzG0ovjiN0qSLbsXBybxqiOEmz1oKhE/of4fvVh7atbiE1kaFTu2aRseIP++SYJgR2oUfwlHw6edWzIQojuEoCbzopMzDSAjHMg/cJtWbYgqKqqm2gUoeNPdy19+6S7qa3xsld/UG5OfUJC6p8w52DJTa040ot7SyHKwhGhSibms6V7y65/iObxGkTiLbXC/wBHrhY2wyVkJd6h6qmkkJQECn5GHn8s0+oWaSuGIaybYpyIuUu0R7UMDtHoIhTQ0nUv0XE8N8EZAgLowxvqnXsefMf0qDU1RUx1Ruc7g58TgSHdz6Y+SSguyCVV/gY4bbo05vmXuC7YU0acjfsWwrnKIiJhyYxcf/c6vDt+dAnjXfnQdT6jqtT15r6oAHAGB0AC9nmdK/JUXcTdtS93aJ3NFwaQryS6HcSIHeOADkQCqMcJ2iWsEHeyzuKjBtpBwiZq5kZRDApEz3tgDz3+XhWnAhuoAGKkmn9dVen7TPaYIQ5spzlwzjjH1RkVSYo3RgdU2bAsdhYEAnHsxOuqYwqOHS47lXCg+8oc3iI05gDNc2/OugGKreomlqZDNLyT1KRkl5yUKFChSRBUhUwNcdIYrXDTuQtWVMZIjku5FcvVJUOhgp/1AmlPEDD3PfV+W+7kQK/jZQyTZupku9ICgXuZ698o1BdO0ly851xtv80GHflaGqp4YWf55wFE/D9rjcOiF5k0X1WUEqiRwThJ1Tkk4T5AQhjD1D4R+1TNr5r0z0gtRI7FqV9KP1QaxrNPG5dYenLy+dQ1xoMWmpklY8XHJFdXZ7UIZsKHM6CJeZzqDjkT3aIaywJzcSukZpUxhh0EzFTWPzL6yUB2lE3xDyrSEdgtV7qqW71TNkj2udJH2LmDqB/uKrmrvbywwwHj174UlltS4VdPXklcNxOkrgO1M6Ou1U7NFqfbu2kL+IC/xbs18eHTVdfUjSVK4Jc6RHDdRZFwuA4IcEvx5+YYorxJ30vF2E4t6ATNJ3TPlMyZs2w5MQDcjKj5AUvjTGu6BLw3cJS0IipskTt/VTKF/EuqbAmH8/1o+kooK2jZDO0NkkkAYBgYaOp9uih5O9mT1JR/hbbvLpXvu/zJl9dnZJRNoKhsD2CfIgCPw8x8K+Vp3Fc7viseQYTriRiGEX2kg2MUAbprHxtAgfn/AHVIGjBY6zdIGLJur2qMUx3rLgOSHU27j7TePOoi4UrjbSMbdV1lWI7uW5pRXs25feTSIblv8iB1p3INQ+4TuaCGgRtBHTsD9ACveHbj9E/bt1AlpriTtmyIN+LVkwZnfSxS894D+7Ib74/qphcYUOteF72LZbSYfpLTbwvrLJuvtSI3JzMcQxzHr73lSnwzEbSup2oN0iqZy8fSBmaKm3A7ER75xz7pRGi1sSKV6cXF0T7jco0ttAkSwbCBdxlj+9tLz8jfnR9NTxWyv3wNH+niyTjq4j/k/hBGGu9gpE1Z7TSXQqVctbgkEnUa32tXSgkFUTj3SAbu7QLkQoxad4r6Y6CMbivZ8q4eoMSuXRlB7yhz97YX+LvYph8W0yzmp/T+xXK6bdrKSIPHiipsE7BLng3yGvlxhIGntJ7dMk3VJApy7cHhlCCAA3KbaBzcuQU201DHW09JFV8Gd5c44GcDoM/NeDDtvzKf+loXDqjBBdFyvVo5vJk3sYdqbaDdEwdwTj1Mcwc/LvdKR+H3UWSuO5b8s+Tfe0zW8+7Fu+EQBQUjbsFEfiDz/wDNPi7b/h9ONOBlCnBZNFqRNo0QNkzhTG0hSFAe8YRqJtCLNd6MaUXbfN0gKM7MdrKO0fxJABREhfr3v1CkrIoaqnqXSMDQ5zWxj556/ZDAbgkolY1+XI81sv1JrMu52MZKEYR7BbGBcCXccRMBehO9n+avFwPb1t/iPsWDRuxxJKSRFXMpGbCggkiHugQvh4l3G+Glzg807ND2I5u2UA605crkz5RRQc7ExNkoB9QwYf8A1SLovMNr2131JvhxtXKzN7IYgXmKSSZdxjfIBMBf6qkMjqVtTViCNpbDHsJwOX4x/fnheggkj5JxaxanqQGttl2xKPl4a15RI+XSXcKsvu2lSMfwD3enxBUi2jAz8Ve0+u+lV39tmSSCOQVwHZm57+fj4daj+/Yy3OJXQxw/eikxXRSUXbLgcN7JZMRyOfD3edOfhgmZ2d0Ut1zcQG9fKkKZTn95RMo4IcfqABURuLI47KJY2Br2nY9pHzyHA+vZEuwGc9RwpVoUBoVVqRpxytwAmcyTcAOIdRqPpGx4CSAvrsOzXwO4DGSDcBvPPnThD94f+avDj3aJt0f7cMU7iCe6eblcZ617nyHgdB2CQ4ezoW33CriOjUGy6od9UCAJzfU3WjU7b0ZczP1WUYov0QHcUq5d2B86PBXadXVU5cH7zu9c8po3JNi7WiYZUyzRimksYuBVEMn/AKh514uO1om74pSNmo9CSZHEDCi4JuLkOg0sB0GvFB+JmErZA85HfPK7KKx8UzYx6bFBuki0TJ2ZUEyABAL0xjFJlsWFbtnFXCFh2kb25963q6YFA4/Ol4te/ChNrKhm9oef4uvPX3Xbki29ZsJaYOgiI1vH+sqist2JADeceojXzj7IgoqceTDOLbN5N4OV3aZMHU+o0uD0r0PQKB8bUO3uMh5GDyefddlIM7Y1v3JIsX8rENH71kIi3WXTATJj8qVX0e1kGyjZy2ScNlC7TonJkpi+WKMh1rz40L4mc7G7z/D056ey7ckKNsW34pZuo0iWyRm/JITEz2QeRM+79qUpCJZzLJZm/bJvGipdqiC5dxDh8w8aOjQ/CNc6qnlcN7zkd8rty+DNm3j2qTZqiRBukTsyIphgCl8gCkuHsyDt4jwkbGNmRXpzKOgRTAvbGHqI0tfjrputA+ImY07Xnnrz1917uTaPp7bRkhT9itCpG270iEwQ+3puL0H75pwIt026ZU0igkkUMFIUOQfSvR+gV6HrQJamaVuJHkri7KFChQpOgL//2Q==';
+
+const DB_KEY = 'hagerman_db_v1';
+function loadDB(){
+  try{
+    const raw = localStorage.getItem(DB_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {clienti:[], centrali:[], sensori:[], interventi:[]};
+}
+let DB = loadDB();
+function saveDB(){ localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ===================== Sincronizzazione multi-dispositivo ===================== */
+// Deve combaciare esattamente con API_KEY in backend/config.php sul server.
+const SYNC_API_KEY = 'OOmheFTfX3iEbvldVUpQbfwxUCsZfuyv8TpGiL7ytamOhb0F';
+const SYNC_IS_NATIVE = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+// PWA: percorso relativo (stesso dominio). APK: URL assoluto, perché la webview gira su https://localhost.
+const SYNC_ENDPOINT = SYNC_IS_NATIVE
+  ? 'https://www.iw1fzr.it/hager/backend/sync.php'
+  : location.origin + '/hager/backend/sync.php';
+const SYNC_LASTSYNC_KEY = 'hagerman_lastsync_v1';
+let syncInProgress = false;
+let syncTimer = null;
+let lastSyncStatus = null; // 'ok' | 'error' | null
+
+function getLastSync(){ return Number(localStorage.getItem(SYNC_LASTSYNC_KEY) || 0); }
+
+async function syncNow(silent){
+  if(syncInProgress) return false;
+  syncInProgress = true;
+  updateSyncIndicator('loading');
+  try{
+    const since = getLastSync();
+    const changes = {
+      clienti: DB.clienti.filter(r=>(r.updated_at||0) > since),
+      centrali: DB.centrali.filter(r=>(r.updated_at||0) > since),
+      sensori: DB.sensori.filter(r=>(r.updated_at||0) > since),
+      interventi: DB.interventi.filter(r=>(r.updated_at||0) > since),
+    };
+    const res = await fetch(SYNC_ENDPOINT, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ apiKey: SYNC_API_KEY, since, changes }),
+    });
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    mergeSyncedChanges(data.changes || {});
+    localStorage.setItem(SYNC_LASTSYNC_KEY, String(data.serverTime));
+    saveDB();
+    lastSyncStatus = 'ok';
+    updateSyncIndicator('ok');
+    if(!silent) showToast('Sincronizzato');
+    // Aggiorna la vista solo se non c'è un modal aperto, per non interrompere chi sta scrivendo
+    if(!document.querySelector('.modal-overlay')) render();
+    return true;
+  }catch(e){
+    console.error('Errore sincronizzazione:', e);
+    lastSyncStatus = 'error';
+    updateSyncIndicator('error');
+    if(!silent) showToast('Sync fallita: '+e.message);
+    return false;
+  }finally{
+    syncInProgress = false;
+  }
+}
+
+function mergeSyncedChanges(changes){
+  const tables = { clienti: DB.clienti, centrali: DB.centrali, sensori: DB.sensori, interventi: DB.interventi };
+  for(const key in tables){
+    const list = tables[key];
+    (changes[key] || []).forEach(remote=>{
+      const idx = list.findIndex(l=>l.id===remote.id);
+      if(idx===-1){ list.push(remote); }
+      else if((remote.updated_at||0) >= (list[idx].updated_at||0)){ list[idx] = remote; }
+    });
+  }
+}
+
+function scheduleSync(){
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(()=>syncNow(true), 4000);
+}
+
+function updateSyncIndicator(state){
+  const el = document.getElementById('sync-indicator');
+  if(!el) return;
+  const now = new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  if(state==='loading'){ el.innerHTML = '<span class="led neutro"></span>Sincronizzazione...'; }
+  else if(state==='ok'){ el.innerHTML = '<span class="led ok"></span>Sincronizzato alle '+now; }
+  else if(state==='error'){ el.innerHTML = '<span class="led danger"></span>Sync non riuscita — offline?'; }
+}
+
+// Sync automatico: all'avvio, ogni 45s, e quando l'app torna in primo piano
+setTimeout(()=>syncNow(true), 1200);
+setInterval(()=>syncNow(true), 45000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow(true); });
+
+/* ===================== Catalogo Hager Logisty ===================== */
+// Codici e batterie verificati sul Listino ufficiale Hager Sicurezza (v.02 2013) e sulle schede prodotto Logisty Expert/Sepio.
+// Ogni voce riporta il componente SINGOLO (non kit) con la batteria realmente abbinata secondo il listino.
+const CATALOGO = {
+  centrale: [
+    {codice:'S302-22I', nome:'Logisty Expert "Facile+" — 20 rivelatori, 2 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S303-22I', nome:'Logisty Expert — 40 rivelatori, 4 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S318-22I', nome:'Logisty dual.mix — centrale mista radio/filare, 3 zone', batteria:'BatNiMH2 — NiMH 12V 2Ah', autonomia:null},
+    {codice:'RLC321T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 2 zone, 15 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'RLC332T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 3 zone, 25 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'RLC354T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 4 zone, 40 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'L3315I', nome:'Logisty2 SuperVocalis — sintesi vocale, linea precedente', batteria:'Litio — verificare sigla su etichetta', autonomia:4},
+  ],
+  movimento: [
+    {codice:'S161-22I', nome:'Rivelatore movimento volumetrico (fino a 12m, 90°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S162-22X', nome:'Rivelatore movimento lineare (fino a 22m, 10°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S163-22X', nome:'Rivelatore movimento a tenda (fino a 12m)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S166-22I', nome:'Rivelatore movimento speciale per animali', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S121-22X', nome:'Rivelatore movimento a doppia tecnologia (IR + microonde)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'RLA001T', nome:'Rivelatore movimento IR 12m/90° (linea Sepio/Alma)', batteria:'Litio 3V — verificare sigla su etichetta', autonomia:4},
+  ],
+  apertura: [
+    {codice:'RLA261T', nome:'Rivelatore apertura bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA262T', nome:'Rivelatore apertura marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA271T', nome:'Rivelatore apertura multicontatto bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA272T', nome:'Rivelatore apertura multicontatto marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'S231-22X', nome:'Rivelatore per avvolgibili e aperture bianco', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S236-22X', nome:'Rivelatore per avvolgibili e aperture marrone', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S280-22X', nome:'Rivelatore microfonico rottura vetri', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S165-22X', nome:'Sensore compatto (linea Daitem Lynx)', batteria:'BatLi28 / BatLi38 — Litio 3V 2,4Ah', autonomia:4},
+  ],
+  sirena: [
+    {codice:'S404-22I', nome:'Sirena interno/esterno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S405-22I', nome:'Sirena esterno con lampeggiante Xeno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'RLD405T', nome:'Sirena da esterno (linea Sepio)', batteria:'BatLi06 — Litio 7,2V 5Ah', autonomia:4},
+  ],
+  telecomando: [
+    {codice:'RLA604T', nome:'Telecomando bidirezionale 4 pulsanti con ritorno di stato', batteria:'CR2430 — Litio 3V 270mAh (confermato)', autonomia:null},
+    {codice:'S612-22X', nome:'Telecomando a 2 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
+    {codice:'S614-22X', nome:'Telecomando a 4 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
+    {codice:'TU444', nome:'Telecomando doppio protocollo Expert/Tebis KNX', batteria:'2x BatLi08 — pila a bottone 3V tipo CR2430', autonomia:null},
+    {codice:'RLF001X', nome:'Medaglione per chiamata di soccorso', batteria:'2x pile litio 3V tipo CR2016 (non sostituibili)', autonomia:10},
+  ],
+  combinatore: [
+    {codice:'S492-22X', nome:'Scheda combinatore telefonico PSTN (interna alla centrale S302/303/318-22I)', batteria:'Alimentata da centrale', autonomia:null},
+    {codice:'S495-22I', nome:'Combinatore telefonico PSTN con comando integrato', batteria:'BatLi23 — Litio 2x3,6V 18Ah', autonomia:4},
+    {codice:'G473-30X', nome:'Combinatore GSM/GPRS con trasmissione immagini', batteria:'BatLi23 — Litio 2x3,6V 18Ah (+ pila 908-21X e alimentatore 910-21X)', autonomia:4},
+    {codice:'S590-22X', nome:'Combinatore telefonico PSTN/ADSL Video', batteria:'Pila litio ricaricabile 3,6V 2Ah (cod. 951-21X)', autonomia:null},
+  ],
+  tastiera: [
+    {codice:'S660-22I', nome:'Tastiera a schermo tattile con transponder', batteria:'BatLi11 + BatLi23', autonomia:4},
+    {codice:'S620-22I', nome:'Tastiera di comando a codice segreto', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S662-22I', nome:'Tastiera di comando vocale con transponder', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
+  ],
+  altri_rivelatori: [
+    {codice:'S151-22X', nome:'Rivelatore di fumo a basso profilo', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S152-22X', nome:'Rivelatore di calore termovelocimetrico', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:5},
+    {codice:'S220-22X', nome:'Trasmettitore universale', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S230-22X', nome:'Trasmettitore universale stagno', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+  ],
+  sensore: [
+    {codice:'GENERICO', nome:'Sensore generico (codice non disponibile)', batteria:'', autonomia:4},
+  ],
+  altro: [
+    {codice:'PERSONALIZZATO', nome:'Altro componente', batteria:'', autonomia:null},
+  ],
+};
+const CATEGORIE_LABEL = {
+  centrale:'Centrale', movimento:'Rivelatore di movimento', apertura:'Rivelatore di apertura',
+  sirena:'Sirena', telecomando:'Telecomando', combinatore:'Combinatore telefonico',
+  tastiera:'Tastiera', altri_rivelatori:'Altro rivelatore (fumo/calore/trasmettitore)',
+  sensore:'Sensore generico', altro:'Altro'
+};
+const BATTERIE_RIFERIMENTO = [
+  {sigla:'BatLi02', desc:'7,2V — 13Ah — Ricevitore interfaccia 8 uscite S710-22X, ripetitore S700-22X'},
+  {sigla:'BatLi04', desc:'3,6V — 2Ah — Pila singola con connettore'},
+  {sigla:'BatLi05', desc:'3,6V — 4Ah — Rivelatori doppia ottica da esterno (S144-22X, S165-22I, RLA004X)'},
+  {sigla:'BatLi06', desc:'7,2V — 5Ah — Sirena esterna linea Sepio (RLD405T)'},
+  {sigla:'BatLi07', desc:'Pila a bottone 3V tipo CR2016 — telecomandi S612-22X, S614-22X (2 pz)'},
+  {sigla:'BatLi08', desc:'Pila a bottone 3V tipo CR2430 — telecomando TU444 (2 pz)'},
+  {sigla:'BatLi11', desc:'Li-ion ricaricabile 3,6V — tastiera touch S660-22I (con BatLi23)'},
+  {sigla:'BatLi22', desc:'2x3,6V — 13Ah — Centrali S302-22I/S303-22I e sirene S404-22I/S405-22I'},
+  {sigla:'BatLi23', desc:'2x3,6V — 18Ah — Combinatori S495-22I, G473-30X, tastiera S660-22I'},
+  {sigla:'BatLi25', desc:'3,6V — 4Ah — Rivelatori movimento S161/162/163/166-22, S121-22X, tastiera S620-22I, trasmettitori S220/230-22X'},
+  {sigla:'BatLi26', desc:'3,6V — 4Ah — Tastiera vocale S662-22I, rivelatore fumo S151-22X, calore S152-22X'},
+  {sigla:'BatLi28', desc:'3,6V — 2Ah — Rivelatore rottura vetri S280-22X, avvolgibili S231/236-22X'},
+  {sigla:'BatLi30', desc:'4,5V — 3Ah — Rivelatori con fotocamera S171/172/175/176-22X'},
+  {sigla:'BatLi31', desc:'3,6V — 1Ah — Rivelatori apertura RLA261T/262T/271T/272T'},
+  {sigla:'BatLi38', desc:'3V — 2,4Ah — Litio-biossido di manganese, sensori compatti serie S165-22X'},
+  {sigla:'BatNiMH2', desc:'NiMH 12V — 2Ah — Centrale dual.mix S318-22I'},
+  {sigla:'BatPB2', desc:'Piombo 12V — 2Ah — Sirene filari S411-22I, S432-22I'},
+  {sigla:'CR2430', desc:'Pila a bottone 3V — telecomando RLA604T (confermato), TU444, video S518-22X (2 pz)'},
+  {sigla:'CR2016', desc:'Pila a bottone 3V — telecomandi S612-22X/S614-22X, medaglione RLF001X'},
+];
+
+/* ===================== Router minimale ===================== */
+function go(hash){ location.hash = hash; }
+window.addEventListener('hashchange', render);
+window.addEventListener('DOMContentLoaded', render);
+
+function parseRoute(){
+  const h = location.hash.slice(1) || '/';
+  const parts = h.split('/').filter(Boolean);
+  return parts;
+}
+
+/* ===================== Helpers stato batteria ===================== */
+function statoBatteria(sensore){
+  if(!sensore.dataSostituzione || !sensore.autonomiaAnni) return {stato:'neutro', label:'—'};
+  const d = new Date(sensore.dataSostituzione);
+  const scadenza = new Date(d); scadenza.setFullYear(scadenza.getFullYear()+Number(sensore.autonomiaAnni));
+  const oggi = new Date();
+  const mesiRestanti = (scadenza - oggi)/(1000*60*60*24*30);
+  if(mesiRestanti < 0) return {stato:'danger', label:'Scaduta — '+fmtData(scadenza)};
+  if(mesiRestanti < 6) return {stato:'warn', label:'In scadenza — '+fmtData(scadenza)};
+  return {stato:'ok', label:'OK fino a '+fmtData(scadenza)};
+}
+function fmtData(d){
+  if(!(d instanceof Date)) d = new Date(d);
+  if(isNaN(d)) return '—';
+  return d.toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function today(){ return new Date().toISOString().slice(0,10); }
+
+/* ===================== Render principale ===================== */
+function render(){
+  const parts = parseRoute();
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  if(parts.length===0){ renderListaClienti(app); return; }
+  if(parts[0]==='cliente' && parts[1]){ renderCliente(app, parts[1]); return; }
+  if(parts[0]==='centrale' && parts[1]){ renderCentrale(app, parts[1]); return; }
+  if(parts[0]==='report' && parts[1]){ renderReport(app, parts[1]); return; }
+  if(parts[0]==='batterie'){ renderRiferimentoBatterie(app); return; }
+  renderListaClienti(app);
+}
+
+function topbar(opts){
+  const {title, sub, back, actLabel, actFn, showLogo} = opts;
+  const el = document.createElement('header');
+  el.className='topbar';
+  el.innerHTML = `
+    ${back? `<button class="back" id="btn-back">‹</button>`:''}
+    ${showLogo? `<img class="logo" src="data:image/jpeg;base64,${LOGO_B64}" alt="Ten Solutions">`:''}
+    <div class="title"><h1>${title}</h1>${showLogo? `<span class="tag">Hager Logisty</span>`:''}${sub?`<div class="sub">${sub}</div>`:''}</div>
+    ${actLabel? `<button class="act" id="btn-act">${actLabel}</button>`:''}
+  `;
+  if(back) el.querySelector('#btn-back').onclick = ()=>history.back();
+  if(actLabel) el.querySelector('#btn-act').onclick = actFn;
+  return el;
+}
+
+function showToast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(),300); }, 1800);
+}
+
+/* ===================== Vista: Lista Clienti ===================== */
+function renderListaClienti(app){
+  app.appendChild(topbar({title:'Manutenzioni Antifurto', showLogo:true}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  const syncRow = document.createElement('div');
+  syncRow.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12.5px;color:var(--ink-dim)';
+  syncRow.innerHTML = `<span id="sync-indicator"><span class="led neutro"></span>In attesa di sincronizzazione...</span>
+    <button id="btn-sync-now" style="background:none;border:none;color:var(--accent);font-size:12.5px;font-weight:700;padding:4px">🔄 Sincronizza</button>`;
+  wrap.appendChild(syncRow);
+  syncRow.querySelector('#btn-sync-now').onclick = ()=> syncNow(false);
+  updateSyncIndicator(lastSyncStatus || (getLastSync() ? 'ok' : null));
+
+  const searchWrap = document.createElement('div'); searchWrap.className='search';
+  searchWrap.innerHTML = `<input id="search-cli" placeholder="Cerca cliente, indirizzo...">`;
+  wrap.appendChild(searchWrap);
+
+  const list = document.createElement('div');
+  wrap.appendChild(list);
+
+  function draw(filter){
+    list.innerHTML='';
+    let clienti = DB.clienti.filter(c=>!c.deleted).sort((a,b)=>a.nome.localeCompare(b.nome));
+    if(filter){
+      const f = filter.toLowerCase();
+      clienti = clienti.filter(c => (c.nome+' '+(c.indirizzo||'')).toLowerCase().includes(f));
+    }
+    if(clienti.length===0){
+      const e = document.createElement('div'); e.className='empty';
+      e.innerHTML = `<div class="big">🛡️</div><p><strong>Nessun cliente</strong></p><p>Tocca + per aggiungere la prima scheda cliente.</p>`;
+      list.appendChild(e); return;
+    }
+    clienti.forEach(c=>{
+      const nCentrali = DB.centrali.filter(x=>x.clienteId===c.id && !x.deleted).length;
+      const row = document.createElement('div'); row.className='rowlink';
+      row.innerHTML = `<div class="main"><div class="t">${escapeHtml(c.nome)}</div>
+        <div class="s">${escapeHtml(c.indirizzo||'—')} · ${nCentrali} central${nCentrali===1?'e':'i'}</div></div>
+        <div class="chev">›</div>`;
+      row.onclick = ()=> go('#/cliente/'+c.id);
+      list.appendChild(row);
+    });
+  }
+  draw('');
+  searchWrap.querySelector('input').addEventListener('input', e=>draw(e.target.value));
+
+  const addBtn = document.createElement('button');
+  addBtn.className = 'addrow-wide'; addBtn.textContent = '+ Nuovo cliente';
+  addBtn.onclick = ()=> modalCliente();
+  wrap.appendChild(addBtn);
+
+  const footer = document.createElement('div'); footer.className='footer-actions';
+  footer.innerHTML = `<button class="btn" id="btn-export">Esporta backup (JSON)</button>
+    <button class="btn" id="btn-import">Importa backup</button>
+    <button class="btn" id="btn-ref">Rif. batterie</button>`;
+  wrap.appendChild(footer);
+  app.appendChild(wrap);
+
+  footer.querySelector('#btn-ref').onclick = ()=> go('#/batterie');
+  footer.querySelector('#btn-export').onclick = exportBackup;
+  footer.querySelector('#btn-import').onclick = importBackup;
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ===================== Modal: Nuovo/Modifica Cliente ===================== */
+/* ===================== Autosave nei modal ===================== */
+// Salva automaticamente ad ogni input/change, con debounce. Se il record è nuovo,
+// viene creato al primo dato utile e aggiornato ad ogni modifica successiva.
+// "Annulla" scarta il record se creato in questa sessione (non ancora confermato con Salva).
+function wireAutosave(overlay, {existing, list, buildData, extra, minContent}){
+  const state = { record: existing || null, isNew: !existing };
+  let timer = null;
+  function persist(){
+    const data = buildData();
+    data.updated_at = Date.now();
+    if(!state.record){
+      if(!minContent(data)) return;
+      data.deleted = false;
+      state.record = Object.assign({id: uid()}, extra||{}, data);
+      list.push(state.record);
+    } else {
+      Object.assign(state.record, data);
+    }
+    saveDB();
+    scheduleSync();
+    const ind = overlay.querySelector('.autosave-indicator');
+    if(ind) ind.textContent = 'Salvato automaticamente ✓';
+  }
+  overlay.addEventListener('input', ()=>{ clearTimeout(timer); timer = setTimeout(persist, 400); });
+  overlay.addEventListener('change', ()=>{ clearTimeout(timer); timer = setTimeout(persist, 120); });
+  state.finalize = persist;
+  state.discardIfUnsaved = function(){
+    if(state.isNew && state.record){
+      // Non rimuoviamo il record: lo segnamo eliminato così, se era già stato
+      // sincronizzato nel frattempo, la cancellazione si propaga agli altri dispositivi.
+      state.record.deleted = true;
+      state.record.updated_at = Date.now();
+      saveDB();
+      scheduleSync();
+    }
+  };
+  return state;
+}
+const AUTOSAVE_INDICATOR_HTML = '<div class="hint autosave-indicator" style="margin:-4px 0 12px">Salvataggio automatico attivo</div>';
+
+function modalCliente(existing){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica cliente':'Nuova scheda cliente'}</h2>
+    ${AUTOSAVE_INDICATOR_HTML}
+    <label>Nome / Ragione sociale *</label><input id="f-nome" value="${existing?escapeHtml(existing.nome):''}">
+    <label>Indirizzo</label><input id="f-indirizzo" value="${existing?escapeHtml(existing.indirizzo||''):''}">
+    <label>Telefono</label><input id="f-telefono" value="${existing?escapeHtml(existing.telefono||''):''}">
+    <label>Note</label><textarea id="f-note" rows="3">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  function buildData(){
+    return {
+      nome: overlay.querySelector('#f-nome').value.trim(),
+      indirizzo: overlay.querySelector('#f-indirizzo').value.trim(),
+      telefono: overlay.querySelector('#f-telefono').value.trim(),
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+  }
+  const auto = wireAutosave(overlay, {
+    existing, list: DB.clienti, buildData,
+    minContent: d => d.nome.length > 0,
+  });
+
+  function closeDiscard(){ auto.discardIfUnsaved(); overlay.remove(); render(); }
+  overlay.onclick = e=>{ if(e.target===overlay) closeDiscard(); };
+  overlay.querySelector('#btn-cancel').onclick = closeDiscard;
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const data = buildData();
+    if(!data.nome){ showToast('Inserisci il nome cliente'); return; }
+    auto.finalize();
+    overlay.remove(); render();
+    if(!isEdit) go('#/cliente/'+auto.record.id);
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare il cliente e tutte le centrali/sensori/interventi associati?')) return;
+      const now = Date.now();
+      const centraliIds = DB.centrali.filter(c=>c.clienteId===existing.id).map(c=>c.id);
+      DB.sensori.forEach(s=>{ if(centraliIds.includes(s.centraleId)){ s.deleted=true; s.updated_at=now; } });
+      DB.interventi.forEach(i=>{ if(centraliIds.includes(i.centraleId)){ i.deleted=true; i.updated_at=now; } });
+      DB.centrali.forEach(c=>{ if(c.clienteId===existing.id){ c.deleted=true; c.updated_at=now; } });
+      existing.deleted = true; existing.updated_at = now;
+      saveDB(); scheduleSync(); overlay.remove(); go('#/');
+    };
+  }
+}
+
+/* ===================== Vista: Scheda Cliente ===================== */
+function renderCliente(app, clienteId){
+  const cliente = DB.clienti.find(c=>c.id===clienteId);
+  if(!cliente){ go('#/'); return; }
+  app.appendChild(topbar({title:cliente.nome, sub:cliente.indirizzo||'', back:true, actLabel:'Modifica', actFn:()=>modalCliente(cliente)}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  if(cliente.telefono || cliente.note){
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `${cliente.telefono?`<div>📞 ${escapeHtml(cliente.telefono)}</div>`:''}
+      ${cliente.note?`<div style="margin-top:6px;color:var(--ink-dim);font-size:13.5px">${escapeHtml(cliente.note)}</div>`:''}`;
+    wrap.appendChild(card);
+  }
+
+  const sh = document.createElement('div'); sh.className='sectionhead';
+  sh.innerHTML = `<h2>Centrali installate</h2><button class="addbtn" id="btn-add-centrale">+ Centrale</button>`;
+  wrap.appendChild(sh);
+
+  const centrali = DB.centrali.filter(c=>c.clienteId===clienteId && !c.deleted);
+  if(centrali.length===0){
+    const e = document.createElement('div'); e.className='empty';
+    e.innerHTML = `<p>Nessuna centrale registrata.</p>`;
+    wrap.appendChild(e);
+  } else {
+    centrali.forEach(cn=>{
+      const sensori = DB.sensori.filter(s=>s.centraleId===cn.id && !s.deleted);
+      const stati = sensori.map(statoBatteria);
+      const worst = stati.some(s=>s.stato==='danger') ? 'danger' : stati.some(s=>s.stato==='warn') ? 'warn' : (sensori.length?'ok':'neutro');
+      const cat = CATALOGO.centrale.find(x=>x.codice===cn.modello);
+      const row = document.createElement('div'); row.className='rowlink';
+      row.innerHTML = `<div class="main">
+        <div class="t"><span class="led ${worst}"></span>${escapeHtml(cn.modello)}${cat?'':''}</div>
+        <div class="s">Matricola ${escapeHtml(cn.matricola||'—')} · ${sensori.length} sensori</div></div>
+        <div class="chev">›</div>`;
+      row.onclick = ()=> go('#/centrale/'+cn.id);
+      wrap.appendChild(row);
+    });
+  }
+  app.appendChild(wrap);
+  sh.querySelector('#btn-add-centrale').onclick = ()=> modalCentrale(null, clienteId);
+}
+
+/* ===================== Modal: Nuova/Modifica Centrale ===================== */
+function modalCentrale(existing, clienteId){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const opts = CATALOGO.centrale.map(m=>`<option value="${m.codice}" ${existing&&existing.modello===m.codice?'selected':''}>${m.codice} — ${m.nome}</option>`).join('')
+    + `<option value="PERSONALIZZATO" ${existing&&existing.modello==='PERSONALIZZATO'?'selected':''}>Altro / personalizzato</option>`;
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica centrale':'Nuova centrale'}</h2>
+    ${AUTOSAVE_INDICATOR_HTML}
+    <label>Modello</label>
+    <select id="f-modello">${opts}</select>
+    <div id="f-modello-custom-wrap" style="display:none"><label>Modello (testo libero)</label><input id="f-modello-custom" value="${existing&&existing.modelloCustom?escapeHtml(existing.modelloCustom):''}"></div>
+    <label>Matricola / codice centrale</label><input id="f-matricola" class="mono" value="${existing?escapeHtml(existing.matricola||''):''}">
+    <label>Data installazione</label><input type="date" id="f-data" value="${existing?existing.dataInstallazione||'':''}">
+    <label>Zone / gruppi</label><input id="f-zone" value="${existing?escapeHtml(existing.zone||''):''}">
+    <label>Note</label><textarea id="f-note" rows="3">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  const selModello = overlay.querySelector('#f-modello');
+  const customWrap = overlay.querySelector('#f-modello-custom-wrap');
+  function syncCustom(){ customWrap.style.display = selModello.value==='PERSONALIZZATO' ? 'block':'none'; }
+  selModello.onchange = syncCustom; syncCustom();
+
+  function buildData(){
+    return {
+      modello: selModello.value,
+      modelloCustom: overlay.querySelector('#f-modello-custom').value.trim(),
+      matricola: overlay.querySelector('#f-matricola').value.trim(),
+      dataInstallazione: overlay.querySelector('#f-data').value,
+      zone: overlay.querySelector('#f-zone').value.trim(),
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+  }
+  const auto = wireAutosave(overlay, {
+    existing, list: DB.centrali, buildData, extra: {clienteId},
+    minContent: d => d.matricola.length>0 || d.dataInstallazione.length>0 || d.zone.length>0 || d.note.length>0 || d.modelloCustom.length>0,
+  });
+
+  function closeDiscard(){ auto.discardIfUnsaved(); overlay.remove(); render(); }
+  overlay.onclick = e=>{ if(e.target===overlay) closeDiscard(); };
+  overlay.querySelector('#btn-cancel').onclick = closeDiscard;
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    auto.finalize();
+    overlay.remove(); render();
+    if(!isEdit && auto.record) go('#/centrale/'+auto.record.id);
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare questa centrale e tutti i sensori/interventi associati?')) return;
+      const now = Date.now();
+      DB.sensori.forEach(s=>{ if(s.centraleId===existing.id){ s.deleted=true; s.updated_at=now; } });
+      DB.interventi.forEach(i=>{ if(i.centraleId===existing.id){ i.deleted=true; i.updated_at=now; } });
+      existing.deleted = true; existing.updated_at = now;
+      saveDB(); scheduleSync(); overlay.remove(); go('#/cliente/'+clienteId);
+    };
+  }
+}
+
+/* ===================== Vista: Scheda Centrale ===================== */
+function renderCentrale(app, centraleId){
+  const centrale = DB.centrali.find(c=>c.id===centraleId);
+  if(!centrale){ go('#/'); return; }
+  const cliente = DB.clienti.find(c=>c.id===centrale.clienteId);
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+
+  app.appendChild(topbar({title:modName, sub:(cliente?cliente.nome+' · ':'')+'Matr. '+(centrale.matricola||'—'), back:true, actLabel:'Modifica', actFn:()=>modalCentrale(centrale, centrale.clienteId)}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+
+  const infoCard = document.createElement('div'); infoCard.className='card';
+  infoCard.innerHTML = `
+    <div><strong>Installata:</strong> ${centrale.dataInstallazione?fmtData(centrale.dataInstallazione):'—'}</div>
+    ${centrale.zone?`<div><strong>Zone/gruppi:</strong> ${escapeHtml(centrale.zone)}</div>`:''}
+    ${centrale.note?`<div style="margin-top:6px;color:var(--ink-dim);font-size:13.5px">${escapeHtml(centrale.note)}</div>`:''}
+  `;
+  wrap.appendChild(infoCard);
+
+  // Sensori
+  const sh1 = document.createElement('div'); sh1.className='sectionhead';
+  sh1.innerHTML = `<h2>Componenti impianto</h2><button class="addbtn" id="btn-add-sensore">+ Componente</button>`;
+  wrap.appendChild(sh1);
+
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
+  if(sensori.length===0){
+    const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun componente registrato.</p>';
+    wrap.appendChild(e);
+  } else {
+    sensori.forEach(s=>{
+      const st = statoBatteria(s);
+      const row = document.createElement('div'); row.className='card';
+      row.style.cursor='pointer';
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:15px">${escapeHtml(s.etichetta || CATEGORIE_LABEL[s.categoria] || s.categoria)}</div>
+            <div class="s" style="font-size:12.5px;color:var(--ink-dim);margin-top:2px">${escapeHtml(CATEGORIE_LABEL[s.categoria]||s.categoria)}${s.zona?' · zona '+escapeHtml(s.zona):''}</div>
+            ${s.modello?`<div class="mono" style="font-size:12px;color:var(--ink-faint);margin-top:4px">Modello/codice: ${escapeHtml(s.modello)}</div>`:''}
+          </div>
+          <span class="badge ${st.stato}"><span class="led ${st.stato}" style="margin-right:5px"></span>${st.label==='—'?'N/D':st.label}</span>
+        </div>
+        <div style="margin-top:8px;font-size:12.5px;color:var(--ink-dim)">Batteria: ${escapeHtml(s.batteria||'—')}</div>
+      `;
+      row.onclick = ()=> modalSensore(s, centraleId);
+      wrap.appendChild(row);
+    });
+  }
+
+  // Storico interventi
+  const sh2 = document.createElement('div'); sh2.className='sectionhead';
+  sh2.innerHTML = `<h2>Storico manutenzioni</h2><button class="addbtn" id="btn-add-intervento">+ Intervento</button>`;
+  wrap.appendChild(sh2);
+
+  const interventi = DB.interventi.filter(i=>i.centraleId===centraleId && !i.deleted).sort((a,b)=>b.data.localeCompare(a.data));
+  if(interventi.length===0){
+    const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun intervento registrato.</p>';
+    wrap.appendChild(e);
+  } else {
+    const tableWrap = document.createElement('div'); tableWrap.className='card'; tableWrap.style.overflowX='auto';
+    let rows = '';
+    interventi.forEach(i=>{
+      const battDesc = (i.batterie||[]).map(b=>{
+        const sens = DB.sensori.find(s=>s.id===b.sensoreId);
+        return (sens? (sens.etichetta || CATEGORIE_LABEL[sens.categoria] || sens.categoria) : 'Componente')+' → '+b.tipoBatteria;
+      }).join('<br>') || '—';
+      rows += `<tr>
+        <td class="mono">${fmtData(i.data)}</td>
+        <td>${escapeHtml(i.tipo)}</td>
+        <td>${battDesc}</td>
+        <td>${escapeHtml(i.tecnico||'—')}</td>
+      </tr>`;
+    });
+    tableWrap.innerHTML = `<table><thead><tr><th>Data</th><th>Tipo</th><th>Batterie sostituite</th><th>Tecnico</th></tr></thead><tbody>${rows}</tbody></table>`;
+    wrap.appendChild(tableWrap);
+  }
+
+  app.appendChild(wrap);
+  sh1.querySelector('#btn-add-sensore').onclick = ()=> modalSensore(null, centraleId);
+  sh2.querySelector('#btn-add-intervento').onclick = ()=> modalIntervento(centraleId);
+
+  const reportBtn = document.createElement('button');
+  reportBtn.className='addrow-wide'; reportBtn.style.marginTop='22px';
+  reportBtn.textContent = '📋 Report stato impianto';
+  reportBtn.onclick = ()=> go('#/report/'+centraleId);
+  wrap.appendChild(reportBtn);
+}
+
+/* ===================== Modal: Nuovo/Modifica Sensore ===================== */
+function suggerisciEtichetta(categoria, centraleId){
+  const stessaCategoria = DB.sensori.filter(s=>s.centraleId===centraleId && s.categoria===categoria && !s.deleted);
+  const label = CATEGORIE_LABEL[categoria] || categoria;
+  if(categoria==='sensore' || categoria==='movimento' || categoria==='apertura'){
+    return 'Sensore '+(stessaCategoria.length+1);
+  }
+  if(stessaCategoria.length===0) return label;
+  return label+' '+(stessaCategoria.length+1);
+}
+
+function modalSensore(existing, centraleId){
+  const isEdit = !!existing;
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const catOpts = Object.keys(CATALOGO).filter(k=>k!=='centrale').map(k=>`<option value="${k}" ${existing&&existing.categoria===k?'selected':(!existing&&k==='sensore'?'selected':'')}>${CATEGORIE_LABEL[k]}</option>`).join('');
+
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>${isEdit?'Modifica componente':'Nuovo componente'}</h2>
+    ${AUTOSAVE_INDICATOR_HTML}
+    <label>Categoria</label>
+    <select id="f-cat">${catOpts}</select>
+    <label>Etichetta / posizione</label>
+    <input id="f-etichetta" placeholder="Es. Sensore 1, Sirena esterna, Combinatore GSM" value="${existing?escapeHtml(existing.etichetta||''):''}">
+    <div class="hint">Se il codice del sensore non è disponibile, va benissimo un'etichetta come "Sensore 1" — basta per tenere traccia della batteria.</div>
+    <label>Modello / codice (se noto)</label>
+    <input id="f-modello" list="modelli-datalist" placeholder="Facoltativo — es. RLA262T" value="${existing?escapeHtml(existing.modello||''):''}">
+    <datalist id="modelli-datalist"></datalist>
+    <label>Zona</label><input id="f-zona" value="${existing?escapeHtml(existing.zona||''):''}">
+    <label>Tipo batteria</label><input id="f-batteria" list="batterie-datalist" value="${existing?escapeHtml(existing.batteria||''):''}">
+    <datalist id="batterie-datalist">${BATTERIE_RIFERIMENTO.map(b=>`<option value="${b.sigla}">`).join('')}</datalist>
+    <label>Autonomia dichiarata (anni)</label><input type="number" id="f-autonomia" min="0" step="1" value="${existing?(existing.autonomiaAnni??4):4}">
+    <div class="two" style="display:flex;gap:10px">
+      <div style="flex:1"><label>Data installazione</label><input type="date" id="f-datainst" value="${existing?existing.dataInstallazione||'':''}"></div>
+      <div style="flex:1"><label>Ultima sostituzione batteria</label><input type="date" id="f-datasost" value="${existing?existing.dataSostituzione||'':''}"></div>
+    </div>
+    <label>Note</label><textarea id="f-note" rows="2">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="modal-footer">
+      ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Salva</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  const selCat = overlay.querySelector('#f-cat');
+  const fEtichetta = overlay.querySelector('#f-etichetta');
+  const fModello = overlay.querySelector('#f-modello');
+  const modelliDatalist = overlay.querySelector('#modelli-datalist');
+  const fBatteria = overlay.querySelector('#f-batteria');
+  const fAutonomia = overlay.querySelector('#f-autonomia');
+
+  function popolaModelli(){
+    const items = CATALOGO[selCat.value] || [];
+    modelliDatalist.innerHTML = items.filter(m=>m.codice!=='PERSONALIZZATO'&&m.codice!=='GENERICO').map(m=>`<option value="${m.codice}">${m.codice} — ${m.nome}</option>`).join('');
+  }
+  function suggerisciSeVuoto(){
+    if(!isEdit && !fEtichetta.value.trim()){
+      fEtichetta.value = suggerisciEtichetta(selCat.value, centraleId);
+    }
+  }
+  selCat.onchange = ()=>{ popolaModelli(); suggerisciSeVuoto(); };
+  fModello.addEventListener('change', ()=>{
+    const items = CATALOGO[selCat.value] || [];
+    const found = items.find(m=>m.codice.toLowerCase()===fModello.value.trim().toLowerCase());
+    if(found && !fBatteria.value.trim()){ fBatteria.value = found.batteria||''; if(found.autonomia) fAutonomia.value = found.autonomia; }
+  });
+  popolaModelli();
+  if(!isEdit) suggerisciSeVuoto();
+
+  function buildData(){
+    return {
+      categoria: selCat.value,
+      etichetta: fEtichetta.value.trim() || suggerisciEtichetta(selCat.value, centraleId),
+      modello: fModello.value.trim(),
+      zona: overlay.querySelector('#f-zona').value.trim(),
+      batteria: fBatteria.value.trim(),
+      autonomiaAnni: fAutonomia.value ? Number(fAutonomia.value) : null,
+      dataInstallazione: overlay.querySelector('#f-datainst').value,
+      dataSostituzione: overlay.querySelector('#f-datasost').value,
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+  }
+  const auto = wireAutosave(overlay, {
+    existing, list: DB.sensori, buildData, extra: {centraleId},
+    minContent: d => true, // categoria+etichetta sono già valorizzate di default
+  });
+
+  function closeDiscard(){ auto.discardIfUnsaved(); overlay.remove(); render(); }
+  overlay.onclick = e=>{ if(e.target===overlay) closeDiscard(); };
+  overlay.querySelector('#btn-cancel').onclick = closeDiscard;
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    auto.finalize();
+    overlay.remove(); render();
+  };
+  if(isEdit){
+    overlay.querySelector('#btn-del').onclick = ()=>{
+      if(!confirm('Eliminare questo componente?')) return;
+      existing.deleted = true; existing.updated_at = Date.now();
+      saveDB(); scheduleSync(); overlay.remove(); render();
+    };
+  }
+}
+
+/* ===================== Modal: Registra Intervento ===================== */
+function modalIntervento(centraleId){
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
+  const overlay = document.createElement('div'); overlay.className='modal-overlay';
+  const battRefOpts = BATTERIE_RIFERIMENTO.map(b=>`<option value="${b.sigla}">${b.sigla}</option>`).join('')+'<option value="Altro">Altro</option>';
+
+  const checklines = sensori.map(s=>{
+    const label = s.etichetta || `${CATEGORIE_LABEL[s.categoria]||s.categoria}${s.modello?' — '+s.modello:''}`;
+    const defaultBatt = (s.batteria||'').split(' ')[0] || '';
+    return `<div class="checkline" data-sensore="${s.id}">
+      <input type="checkbox" class="chk-batt">
+      <div class="lbl">${escapeHtml(label)}</div>
+      <select class="sel-batt">${battRefOpts}</select>
+    </div>`;
+  }).join('');
+
+  overlay.innerHTML = `<div class="modal">
+    <div class="modal-handle"></div>
+    <h2>Nuovo intervento</h2>
+    ${AUTOSAVE_INDICATOR_HTML}
+    <label>Data intervento</label><input type="date" id="f-data" value="${today()}">
+    <label>Tecnico</label><input id="f-tecnico" placeholder="Nome tecnico">
+    <label>Tipo intervento</label>
+    <select id="f-tipo">
+      <option>Manutenzione ordinaria</option>
+      <option>Sostituzione batterie</option>
+      <option>Verifica / test funzionale</option>
+      <option>Riparazione guasto</option>
+      <option>Aggiornamento centrale</option>
+      <option>Altro</option>
+    </select>
+    ${sensori.length? `<label>Batterie sostituite in questo intervento</label>${checklines}<div class="hint">Seleziona i sensori e il tipo di batteria montata.</div>` : '<div class="hint" style="margin-top:14px">Nessun sensore registrato su questa centrale.</div>'}
+    <label>Note</label><textarea id="f-note" rows="3" placeholder="Dettagli intervento, anomalie riscontrate..."></textarea>
+    <div class="modal-footer">
+      <button class="btn" id="btn-cancel">Annulla</button>
+      <button class="btn primary" id="btn-save">Registra</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  function buildData(){
+    const battSostituite = [];
+    overlay.querySelectorAll('.checkline').forEach(line=>{
+      const chk = line.querySelector('.chk-batt');
+      if(chk.checked){
+        battSostituite.push({ sensoreId: line.getAttribute('data-sensore'), tipoBatteria: line.querySelector('.sel-batt').value });
+      }
+    });
+    return {
+      data: overlay.querySelector('#f-data').value,
+      tecnico: overlay.querySelector('#f-tecnico').value.trim(),
+      tipo: overlay.querySelector('#f-tipo').value,
+      batterie: battSostituite,
+      note: overlay.querySelector('#f-note').value.trim(),
+    };
+  }
+  function applicaSostituzioniBatterie(batterie, data){
+    batterie.forEach(b=>{
+      const sens = DB.sensori.find(s=>s.id===b.sensoreId);
+      if(sens){ sens.dataSostituzione = data; sens.updated_at = Date.now(); }
+    });
+  }
+  const auto = wireAutosave(overlay, {
+    existing: null, list: DB.interventi, extra: {centraleId},
+    buildData: ()=>{
+      const d = buildData();
+      applicaSostituzioniBatterie(d.batterie, d.data);
+      return d;
+    },
+    minContent: d => d.tecnico.length>0 || d.note.length>0 || d.batterie.length>0 || d.tipo!=='Manutenzione ordinaria',
+  });
+
+  function closeDiscard(){ auto.discardIfUnsaved(); overlay.remove(); render(); }
+  overlay.onclick = e=>{ if(e.target===overlay) closeDiscard(); };
+  overlay.querySelector('#btn-cancel').onclick = closeDiscard;
+  overlay.querySelector('#btn-save').onclick = ()=>{
+    const data = overlay.querySelector('#f-data').value;
+    if(!data){ showToast('Inserisci la data'); return; }
+    auto.finalize();
+    overlay.remove(); render();
+    showToast('Intervento registrato');
+  };
+}
+
+/* ===================== Vista: Report stato impianto ===================== */
+function generaTestoReport(cliente, centrale, sensori){
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+  let t = 'REPORT STATO IMPIANTO ANTIFURTO\n';
+  t += '================================\n';
+  t += 'Cliente: '+(cliente?cliente.nome:'—')+'\n';
+  if(cliente&&cliente.indirizzo) t += 'Indirizzo: '+cliente.indirizzo+'\n';
+  t += 'Centrale: '+modName+' — Matricola: '+(centrale.matricola||'—')+'\n';
+  if(centrale.dataInstallazione) t += 'Installata il: '+fmtData(centrale.dataInstallazione)+'\n';
+  if(centrale.zone) t += 'Zone/gruppi: '+centrale.zone+'\n';
+  t += '\nCOMPONENTI:\n';
+  if(sensori.length===0){ t += '- nessun componente registrato\n'; }
+  sensori.forEach(s=>{
+    const st = statoBatteria(s);
+    const nome = s.etichetta || CATEGORIE_LABEL[s.categoria] || s.categoria;
+    t += '- '+nome+' ('+(CATEGORIE_LABEL[s.categoria]||s.categoria)+')'
+      + (s.modello?' — '+s.modello:'') + '\n';
+    t += '   Batteria: '+(s.batteria||'—')
+      + ' | Installato: '+(s.dataInstallazione?fmtData(s.dataInstallazione):'—')
+      + ' | Ultima sost.: '+(s.dataSostituzione?fmtData(s.dataSostituzione):'—')
+      + ' | Stato: '+(st.label==='—'?'N/D':st.label) + '\n';
+  });
+  t += '\nGenerato il: '+fmtData(today())+'\n';
+  return t;
+}
+
+function generaPdfReport(cliente, centrale, sensori){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const marginX = 15;
+  let y = 20;
+
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Report stato impianto antifurto', marginX, y); y += 8;
+
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.setDrawColor(180); doc.line(marginX, y, pageWidth-marginX, y); y += 7;
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text(cliente ? cliente.nome : '—', marginX, y); y += 6;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  if(cliente && cliente.indirizzo){ doc.text(cliente.indirizzo, marginX, y); y += 6; }
+  y += 2;
+
+  doc.setFont(undefined, 'bold'); doc.text('Centrale:', marginX, y);
+  doc.setFont(undefined, 'normal'); doc.text(String(modName), marginX + 22, y); y += 6;
+  doc.setFont(undefined, 'bold'); doc.text('Matricola:', marginX, y);
+  doc.setFont(undefined, 'normal'); doc.text(String(centrale.matricola||'—'), marginX + 22, y); y += 6;
+  if(centrale.dataInstallazione){
+    doc.setFont(undefined, 'bold'); doc.text('Installata il:', marginX, y);
+    doc.setFont(undefined, 'normal'); doc.text(fmtData(centrale.dataInstallazione), marginX + 22, y); y += 6;
+  }
+  if(centrale.zone){
+    doc.setFont(undefined, 'bold'); doc.text('Zone/gruppi:', marginX, y);
+    doc.setFont(undefined, 'normal'); doc.text(String(centrale.zone), marginX + 22, y); y += 6;
+  }
+  y += 4;
+
+  doc.setFontSize(12); doc.setFont(undefined, 'bold');
+  doc.text('Componenti e stato batterie', marginX, y); y += 7;
+  doc.setDrawColor(180); doc.line(marginX, y-4, pageWidth-marginX, y-4);
+
+  const rows = sensori.map(s=>{
+    const st = statoBatteria(s);
+    return {
+      etichetta: s.etichetta || CATEGORIE_LABEL[s.categoria] || s.categoria,
+      categoria: CATEGORIE_LABEL[s.categoria] || s.categoria,
+      batteria: s.batteria || '—',
+      installato: s.dataInstallazione ? fmtData(s.dataInstallazione) : '—',
+      sostituito: s.dataSostituzione ? fmtData(s.dataSostituzione) : '—',
+      stato: st.label==='—' ? 'N/D' : st.label,
+      coloreStato: st.stato,
+    };
+  });
+
+  const colX = { etichetta: marginX, categoria: marginX+38, batteria: marginX+72, installato: marginX+110, sostituito: marginX+135, stato: marginX+160 };
+  const tableWidth = pageWidth - marginX*2;
+  const rowH = 8;
+
+  function drawHeader(){
+    doc.setFillColor(13,21,34);
+    doc.rect(marginX, y, tableWidth, rowH, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(8); doc.setFont(undefined,'bold');
+    doc.text('Etichetta', colX.etichetta+1, y+5.5);
+    doc.text('Categoria', colX.categoria+1, y+5.5);
+    doc.text('Batteria', colX.batteria+1, y+5.5);
+    doc.text('Install.', colX.installato+1, y+5.5);
+    doc.text('Sostit.', colX.sostituito+1, y+5.5);
+    doc.text('Stato', colX.stato+1, y+5.5);
+    y += rowH;
+  }
+  drawHeader();
+
+  doc.setFontSize(8); doc.setFont(undefined,'normal');
+  if(rows.length===0){
+    doc.setTextColor(120);
+    doc.text('Nessun componente registrato', marginX+1, y+5.5);
+    y += rowH;
+  }
+  rows.forEach((r, i)=>{
+    if(y + rowH > 280){ doc.addPage(); y = 20; drawHeader(); doc.setFontSize(8); doc.setFont(undefined,'normal'); }
+    if(i % 2 === 1){ doc.setFillColor(240,240,240); doc.rect(marginX, y, tableWidth, rowH, 'F'); }
+    doc.setTextColor(30,30,30);
+    doc.text(String(r.etichetta).slice(0,22), colX.etichetta+1, y+5.5);
+    doc.text(String(r.categoria).slice(0,20), colX.categoria+1, y+5.5);
+    doc.text(String(r.batteria).slice(0,22), colX.batteria+1, y+5.5);
+    doc.text(String(r.installato), colX.installato+1, y+5.5);
+    doc.text(String(r.sostituito), colX.sostituito+1, y+5.5);
+    if(r.coloreStato==='danger') doc.setTextColor(200,30,30);
+    else if(r.coloreStato==='warn') doc.setTextColor(180,120,0);
+    else if(r.coloreStato==='ok') doc.setTextColor(30,140,60);
+    else doc.setTextColor(120,120,120);
+    doc.text(String(r.stato).slice(0,22), colX.stato+1, y+5.5);
+    doc.setTextColor(30,30,30);
+    y += rowH;
+  });
+  y += 8;
+
+  doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('Generato il ' + fmtData(today()), marginX, 290);
+
+  return doc;
+}
+
+function renderReport(app, centraleId){
+  const centrale = DB.centrali.find(c=>c.id===centraleId);
+  if(!centrale){ go('#/'); return; }
+  const cliente = DB.clienti.find(c=>c.id===centrale.clienteId);
+  const sensori = DB.sensori.filter(s=>s.centraleId===centraleId && !s.deleted);
+  const modName = centrale.modello==='PERSONALIZZATO' ? (centrale.modelloCustom||'Personalizzato') : centrale.modello;
+
+  app.appendChild(topbar({title:'Report stato impianto', sub:cliente?cliente.nome:'', back:true}));
+  const wrap = document.createElement('div'); wrap.className='wrap report-print';
+
+  const head = document.createElement('div'); head.className='card';
+  head.innerHTML = `
+    <h2 style="font-size:1.05rem;margin-bottom:8px">${escapeHtml(cliente?cliente.nome:'—')}</h2>
+    ${cliente&&cliente.indirizzo?`<div style="color:var(--ink-dim);font-size:13.5px">${escapeHtml(cliente.indirizzo)}</div>`:''}
+    <div style="margin-top:10px"><strong>Centrale:</strong> ${escapeHtml(modName)}</div>
+    <div class="mono" style="color:var(--ink-dim);font-size:13px">Matricola: ${escapeHtml(centrale.matricola||'—')}</div>
+    ${centrale.dataInstallazione?`<div style="font-size:13.5px;color:var(--ink-dim)">Installata il ${fmtData(centrale.dataInstallazione)}</div>`:''}
+    ${centrale.zone?`<div style="font-size:13.5px;color:var(--ink-dim)">Zone/gruppi: ${escapeHtml(centrale.zone)}</div>`:''}
+  `;
+  wrap.appendChild(head);
+
+  const listTitle = document.createElement('div'); listTitle.className='sectionhead';
+  listTitle.innerHTML = `<h2>Componenti e stato batterie</h2>`;
+  wrap.appendChild(listTitle);
+
+  if(sensori.length===0){
+    const e = document.createElement('div'); e.className='empty'; e.innerHTML='<p>Nessun componente registrato.</p>';
+    wrap.appendChild(e);
+  } else {
+    sensori.forEach(s=>{
+      const st = statoBatteria(s);
+      const row = document.createElement('div'); row.className='card';
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:15px">${escapeHtml(s.etichetta || CATEGORIE_LABEL[s.categoria] || s.categoria)}</div>
+            <div style="font-size:12.5px;color:var(--ink-dim);margin-top:2px">${escapeHtml(CATEGORIE_LABEL[s.categoria]||s.categoria)}${s.modello?' · '+escapeHtml(s.modello):''}</div>
+          </div>
+          <span class="badge ${st.stato}"><span class="led ${st.stato}" style="margin-right:5px"></span>${st.label==='—'?'N/D':st.label}</span>
+        </div>
+        <table style="margin-top:10px"><tbody>
+          <tr><td style="color:var(--ink-dim);width:40%">Batteria</td><td class="mono">${escapeHtml(s.batteria||'—')}</td></tr>
+          <tr><td style="color:var(--ink-dim)">Installato</td><td>${s.dataInstallazione?fmtData(s.dataInstallazione):'—'}</td></tr>
+          <tr><td style="color:var(--ink-dim)">Ultima sostituzione batteria</td><td>${s.dataSostituzione?fmtData(s.dataSostituzione):'—'}</td></tr>
+        </tbody></table>
+      `;
+      wrap.appendChild(row);
+    });
+  }
+
+  const footer = document.createElement('div'); footer.className='footer-actions no-print';
+  footer.innerHTML = `<button class="btn primary" id="btn-print">Genera PDF</button>
+    <button class="btn" id="btn-share">Condividi testo</button>`;
+  wrap.appendChild(footer);
+  app.appendChild(wrap);
+
+  footer.querySelector('#btn-print').onclick = async ()=>{
+    const btn = footer.querySelector('#btn-print');
+    const originalLabel = btn.textContent;
+    btn.textContent = 'Genero PDF...'; btn.disabled = true;
+    try{
+      const doc = generaPdfReport(cliente, centrale, sensori);
+      const filename = 'report_'+(cliente?cliente.nome.replace(/\s+/g,'_'):'impianto')+'_'+today()+'.pdf';
+
+      if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
+        // In APK: salva su filesystem nativo e apre il foglio di condivisione (visualizza/stampa/invia)
+        const { Filesystem } = Capacitor.Plugins;
+        const base64Data = doc.output('datauristring').split(',')[1];
+        await Filesystem.writeFile({ path: filename, data: base64Data, directory: 'CACHE' });
+        const uriResult = await Filesystem.getUri({ path: filename, directory: 'CACHE' });
+        if(Capacitor.Plugins.Share){
+          await Capacitor.Plugins.Share.share({ title:'Report stato impianto', url: uriResult.uri });
+        } else {
+          showToast('PDF salvato: '+uriResult.uri);
+        }
+      } else {
+        // Browser/PWA: download diretto
+        doc.save(filename);
+        showToast('PDF scaricato');
+      }
+    }catch(e){
+      console.error(e);
+      showToast('Errore nella generazione del PDF: '+e.message);
+    }
+    btn.textContent = originalLabel; btn.disabled = false;
+  };
+  footer.querySelector('#btn-share').onclick = async ()=>{
+    const testo = generaTestoReport(cliente, centrale, sensori);
+    if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Share){
+      try{ await Capacitor.Plugins.Share.share({ title:'Report stato impianto', text: testo }); return; }catch(e){}
+    }
+    if(navigator.share){
+      try{ await navigator.share({ title:'Report stato impianto', text: testo }); return; }catch(e){}
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try{ await navigator.clipboard.writeText(testo); showToast('Report copiato negli appunti'); return; }catch(e){}
+    }
+    // fallback: download come .txt
+    const blob = new Blob([testo], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download='report_'+(cliente?cliente.nome.replace(/\s+/g,'_'):'impianto')+'_'+today()+'.txt';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  };
+}
+
+/* ===================== Vista: Riferimento batterie ===================== */
+function renderRiferimentoBatterie(app){
+  app.appendChild(topbar({title:'Riferimento batterie', sub:'Gamma Hager Logisty', back:true}));
+  const wrap = document.createElement('div'); wrap.className='wrap';
+  const card = document.createElement('div'); card.className='card';
+  let rows = BATTERIE_RIFERIMENTO.map(b=>`<tr><td class="mono">${b.sigla}</td><td>${b.desc}</td></tr>`).join('');
+  card.innerHTML = `<table><thead><tr><th>Sigla</th><th>Utilizzo</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="hint" style="margin-top:12px">Dati tratti dal Listino ufficiale Hager Sicurezza (linea Logisty Expert/Sepio). Per i modelli della linea Vocalis/Logisty2 più datata (L3315I e simili) verificare comunque la sigla stampata sulla batteria montata, perché il listino non specifica il dettaglio per ogni singolo modello di quella linea. In caso di sostituzione, togliere le batterie esaurite e attendere almeno 5 minuti prima di installare le nuove.</div>`;
+  wrap.appendChild(card);
+  app.appendChild(wrap);
+}
+
+/* ===================== Export / Import backup ===================== */
+async function exportBackup(){
+  const json = JSON.stringify(DB, null, 2);
+  const filename = 'backup_manutenzioni_'+today()+'.json';
+
+  // Dentro l'APK (Capacitor): salva su filesystem nativo e apre il foglio di condivisione.
+  if(window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.Filesystem){
+    try{
+      const { Filesystem } = Capacitor.Plugins;
+      await Filesystem.writeFile({ path: filename, data: json, directory: 'CACHE', encoding: 'utf8' });
+      const uriResult = await Filesystem.getUri({ path: filename, directory: 'CACHE' });
+      if(Capacitor.Plugins.Share){
+        await Capacitor.Plugins.Share.share({ title:'Backup manutenzioni', url: uriResult.uri });
+      } else {
+        showToast('Backup salvato: '+uriResult.uri);
+      }
+      return;
+    }catch(e){ console.error(e); showToast('Errore salvataggio backup: '+e.message); return; }
+  }
+
+  // Fallback browser / PWA: download classico.
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  showToast('Backup esportato');
+}
+function importBackup(){
+  const input = document.createElement('input');
+  input.type='file'; input.accept='application/json';
+  input.onchange = ()=>{
+    const file = input.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const data = JSON.parse(reader.result);
+        if(!data.clienti || !data.centrali || !data.sensori || !data.interventi) throw new Error('formato non valido');
+        if(!confirm('Importare questo backup? I dati attuali verranno sovrascritti.')) return;
+        DB = data; saveDB(); render();
+        showToast('Backup importato');
+      }catch(e){ alert('File non valido: '+e.message); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+/* ===================== Service worker registration ===================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
