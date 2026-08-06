@@ -258,70 +258,86 @@ document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) syncNow
 // Ogni voce riporta il componente SINGOLO (non kit) con la batteria realmente abbinata secondo il listino.
 const CATALOGO = {
   centrale: [
-    {codice:'S302-22I', nome:'Logisty Expert "Facile+" — 20 rivelatori, 2 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
-    {codice:'S303-22I', nome:'Logisty Expert — 40 rivelatori, 4 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
-    {codice:'S318-22I', nome:'Logisty dual.mix — centrale mista radio/filare, 3 zone', batteria:'BatNiMH2 — NiMH 12V 2Ah', autonomia:null},
-    {codice:'RLC321T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 2 zone, 15 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
-    {codice:'RLC332T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 3 zone, 25 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
-    {codice:'RLC354T', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 4 zone, 40 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
-    {codice:'L3315I', nome:'Logisty2 SuperVocalis — sintesi vocale, linea precedente', batteria:'Litio — verificare sigla su etichetta', autonomia:4},
+    {codice:'S302-22I', marca:'Hager', nome:'Logisty Expert "Facile+" — 20 rivelatori, 2 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S303-22I', marca:'Hager', nome:'Logisty Expert — 40 rivelatori, 4 zone, sirena e tastiera integrate', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S318-22I', marca:'Hager', nome:'Logisty dual.mix — centrale mista radio/filare, 3 zone', batteria:'BatNiMH2 — NiMH 12V 2Ah', autonomia:null},
+    {codice:'RLC321T', marca:'Hager', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 2 zone, 15 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'RLC332T', marca:'Hager', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 3 zone, 25 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'RLC354T', marca:'Hager', nome:'Logisty Vocalis (Sepio) — sintesi vocale, 4 zone, 40 rivelatori', batteria:'Tampone interna ricaricabile', autonomia:null},
+    {codice:'L3315I', marca:'Hager', nome:'Logisty2 SuperVocalis — sintesi vocale, linea precedente', batteria:'Litio — verificare sigla su etichetta', autonomia:4},
+    {codice:'AVS FENICE 8', marca:'AVS', nome:'AVS Electronics — centrale via filo, 8 ingressi, contenitore metallico', batteria:'Tampone 12V 7Ah (piombo)', autonomia:4},
+    {codice:'AVS ADVANCE 88', marca:'AVS', nome:'AVS Electronics — centrale via filo, linea precedente, fino a 10 ingressi base', batteria:'Tampone 12V 7Ah (piombo)', autonomia:4},
+    {codice:'AVS RAPTOR RK LC', marca:'AVS', nome:'AVS Raptor — centrale via radio bidirezionale, tastiera LCD, alimentata solo a batteria', batteria:'Batteria interna — verificare capacità su etichetta/manuale', autonomia:null},
+    {codice:'AVS RAPTOR RLC', marca:'AVS', nome:'AVS Raptor — centrale via radio bidirezionale, senza tastiera, alimentata solo a batteria', batteria:'Batteria interna — verificare capacità su etichetta/manuale', autonomia:null},
+    {codice:'AVS RAPTOR RK / R', marca:'AVS', nome:'AVS Raptor — centrale via radio bidirezionale, alimentazione 220Vac + tampone', batteria:'Tampone 12V — verificare Ah su etichetta', autonomia:4},
+    {codice:'AVS XTREAM 6 EVO', marca:'AVS', nome:'AVS Xtream — centrale via filo, 6-10 zone, telegestibile', batteria:'Tampone 12V — verificare Ah su etichetta (unità compatta)', autonomia:4},
+    {codice:'AVS XTREAM 32 / 32B / 32 EVO', marca:'AVS', nome:'AVS Xtream — centrale via filo, 32 zone, telegestibile', batteria:'Tampone 12V 17Ah', autonomia:4},
+    {codice:'AVS XTREAM 64 / 64B / 64 EVO', marca:'AVS', nome:'AVS Xtream — centrale via filo, 64 zone, telegestibile', batteria:'Tampone 12V 17Ah', autonomia:4},
+    {codice:'AVS XTREAM 640', marca:'AVS', nome:'AVS Xtream — centrale via filo, fino a 640 zone, telegestibile', batteria:'Tampone 12V 17Ah', autonomia:4},
   ],
   movimento: [
-    {codice:'S161-22I', nome:'Rivelatore movimento volumetrico (fino a 12m, 90°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S162-22X', nome:'Rivelatore movimento lineare (fino a 22m, 10°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S163-22X', nome:'Rivelatore movimento a tenda (fino a 12m)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S166-22I', nome:'Rivelatore movimento speciale per animali', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S121-22X', nome:'Rivelatore movimento a doppia tecnologia (IR + microonde)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'RLA001T', nome:'Rivelatore movimento IR 12m/90° (linea Sepio/Alma)', batteria:'Litio 3V — verificare sigla su etichetta', autonomia:4},
+    {codice:'S161-22I', marca:'Hager', nome:'Rivelatore movimento volumetrico (fino a 12m, 90°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S162-22X', marca:'Hager', nome:'Rivelatore movimento lineare (fino a 22m, 10°)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S163-22X', marca:'Hager', nome:'Rivelatore movimento a tenda (fino a 12m)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S166-22I', marca:'Hager', nome:'Rivelatore movimento speciale per animali', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S121-22X', marca:'Hager', nome:'Rivelatore movimento a doppia tecnologia (IR + microonde)', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'RLA001T', marca:'Hager', nome:'Rivelatore movimento IR 12m/90° (linea Sepio/Alma)', batteria:'Litio 3V — verificare sigla su etichetta', autonomia:4},
+    {codice:'AVS JET PA WS4', marca:'AVS', nome:'AVS Raptor — rivelatore IR da interno, via radio bidirezionale, copertura 15m/90°', batteria:'Litio 3,6V 2,2Ah', autonomia:2},
+    {codice:'AVS ONE PA WS4', marca:'AVS', nome:'AVS Raptor — rivelatore IR da esterno ad effetto tenda, via radio bidirezionale', batteria:'Litio 3,6V 2,2Ah — verificare capacità su etichetta', autonomia:2},
   ],
   apertura: [
-    {codice:'RLA261T', nome:'Rivelatore apertura bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
-    {codice:'RLA262T', nome:'Rivelatore apertura marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
-    {codice:'RLA271T', nome:'Rivelatore apertura multicontatto bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
-    {codice:'RLA272T', nome:'Rivelatore apertura multicontatto marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
-    {codice:'S231-22X', nome:'Rivelatore per avvolgibili e aperture bianco', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
-    {codice:'S236-22X', nome:'Rivelatore per avvolgibili e aperture marrone', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
-    {codice:'S280-22X', nome:'Rivelatore microfonico rottura vetri', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
-    {codice:'S165-22X', nome:'Sensore compatto (linea Daitem Lynx)', batteria:'BatLi28 / BatLi38 — Litio 3V 2,4Ah', autonomia:4},
+    {codice:'RLA261T', marca:'Hager', nome:'Rivelatore apertura bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA262T', marca:'Hager', nome:'Rivelatore apertura marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA271T', marca:'Hager', nome:'Rivelatore apertura multicontatto bianco', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'RLA272T', marca:'Hager', nome:'Rivelatore apertura multicontatto marrone', batteria:'BatLi31 — Litio-ferro 3,6V 1Ah', autonomia:4},
+    {codice:'S231-22X', marca:'Hager', nome:'Rivelatore per avvolgibili e aperture bianco', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S236-22X', marca:'Hager', nome:'Rivelatore per avvolgibili e aperture marrone', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S280-22X', marca:'Hager', nome:'Rivelatore microfonico rottura vetri', batteria:'BatLi28 — Litio 3,6V 2Ah', autonomia:4},
+    {codice:'S165-22X', marca:'Hager', nome:'Sensore compatto (linea Daitem Lynx)', batteria:'BatLi28 / BatLi38 — Litio 3V 2,4Ah', autonomia:4},
+    {codice:'AVS WIC 4 MINI', marca:'AVS', nome:'AVS Raptor — contatto magnetico doppio + inerziale, via radio bidirezionale', batteria:'CR2032 — Litio 3V', autonomia:2},
   ],
   sirena: [
-    {codice:'S404-22I', nome:'Sirena interno/esterno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
-    {codice:'S405-22I', nome:'Sirena esterno con lampeggiante Xeno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
-    {codice:'RLD405T', nome:'Sirena da esterno (linea Sepio)', batteria:'BatLi06 — Litio 7,2V 5Ah', autonomia:4},
+    {codice:'S404-22I', marca:'Hager', nome:'Sirena interno/esterno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'S405-22I', marca:'Hager', nome:'Sirena esterno con lampeggiante Xeno', batteria:'BatLi22 — Litio 2x3,6V 13Ah', autonomia:4},
+    {codice:'RLD405T', marca:'Hager', nome:'Sirena da esterno (linea Sepio)', batteria:'BatLi06 — Litio 7,2V 5Ah', autonomia:4},
+    {codice:'AVS CITY WS4', marca:'AVS', nome:'AVS Raptor — sirena autoalimentata da esterno, via radio bidirezionale', batteria:'BATTCITYWS — Litio 3,6V 5,8Ah (alt.: 4x pile alcaline tipo D)', autonomia:4},
+    {codice:'AVS TS 22 WS4', marca:'AVS', nome:'AVS Raptor — sirena autoalimentata da interno, via radio bidirezionale', batteria:'4x pile alcaline tipo D (1,5V)', autonomia:2},
   ],
   telecomando: [
-    {codice:'RLA604T', nome:'Telecomando bidirezionale 4 pulsanti con ritorno di stato', batteria:'CR2430 — Litio 3V 270mAh (confermato)', autonomia:null},
-    {codice:'S612-22X', nome:'Telecomando a 2 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
-    {codice:'S614-22X', nome:'Telecomando a 4 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
-    {codice:'TU444', nome:'Telecomando doppio protocollo Expert/Tebis KNX', batteria:'2x BatLi08 — pila a bottone 3V tipo CR2430', autonomia:null},
-    {codice:'RLF001X', nome:'Medaglione per chiamata di soccorso', batteria:'2x pile litio 3V tipo CR2016 (non sostituibili)', autonomia:10},
+    {codice:'RLA604T', marca:'Hager', nome:'Telecomando bidirezionale 4 pulsanti con ritorno di stato', batteria:'CR2430 — Litio 3V 270mAh (confermato)', autonomia:null},
+    {codice:'S612-22X', marca:'Hager', nome:'Telecomando a 2 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
+    {codice:'S614-22X', marca:'Hager', nome:'Telecomando a 4 pulsanti', batteria:'2x BatLi07 — pila a bottone 3V tipo CR2016', autonomia:null},
+    {codice:'TU444', marca:'Hager', nome:'Telecomando doppio protocollo Expert/Tebis KNX', batteria:'2x BatLi08 — pila a bottone 3V tipo CR2430', autonomia:null},
+    {codice:'RLF001X', marca:'Hager', nome:'Medaglione per chiamata di soccorso', batteria:'2x pile litio 3V tipo CR2016 (non sostituibili)', autonomia:10},
+    {codice:'AVS ZEN 4 PLUS', marca:'AVS', nome:'AVS Raptor — telecomando via radio bidirezionale', batteria:'CR2032 — Litio 3V (verificare su etichetta)', autonomia:2},
+    {codice:'AVS BIP 4 PLUS', marca:'AVS', nome:'AVS Raptor — tastiera/telecomando via radio con ripetitore integrato', batteria:'CR2032 — Litio 3V (verificare su etichetta)', autonomia:2},
   ],
   combinatore: [
-    {codice:'S492-22X', nome:'Scheda combinatore telefonico PSTN (interna alla centrale S302/303/318-22I)', batteria:'Alimentata da centrale', autonomia:null},
-    {codice:'S495-22I', nome:'Combinatore telefonico PSTN con comando integrato', batteria:'BatLi23 — Litio 2x3,6V 18Ah', autonomia:4},
-    {codice:'G473-30X', nome:'Combinatore GSM/GPRS con trasmissione immagini', batteria:'BatLi23 — Litio 2x3,6V 18Ah (+ pila 908-21X e alimentatore 910-21X)', autonomia:4},
-    {codice:'S590-22X', nome:'Combinatore telefonico PSTN/ADSL Video', batteria:'Pila litio ricaricabile 3,6V 2Ah (cod. 951-21X)', autonomia:null},
+    {codice:'S492-22X', marca:'Hager', nome:'Scheda combinatore telefonico PSTN (interna alla centrale S302/303/318-22I)', batteria:'Alimentata da centrale', autonomia:null},
+    {codice:'S495-22I', marca:'Hager', nome:'Combinatore telefonico PSTN con comando integrato', batteria:'BatLi23 — Litio 2x3,6V 18Ah', autonomia:4},
+    {codice:'G473-30X', marca:'Hager', nome:'Combinatore GSM/GPRS con trasmissione immagini', batteria:'BatLi23 — Litio 2x3,6V 18Ah (+ pila 908-21X e alimentatore 910-21X)', autonomia:4},
+    {codice:'S590-22X', marca:'Hager', nome:'Combinatore telefonico PSTN/ADSL Video', batteria:'Pila litio ricaricabile 3,6V 2Ah (cod. 951-21X)', autonomia:null},
   ],
   tastiera: [
-    {codice:'S660-22I', nome:'Tastiera a schermo tattile con transponder', batteria:'BatLi11 + BatLi23', autonomia:4},
-    {codice:'S620-22I', nome:'Tastiera di comando a codice segreto', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S662-22I', nome:'Tastiera di comando vocale con transponder', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S660-22I', marca:'Hager', nome:'Tastiera a schermo tattile con transponder', batteria:'BatLi11 + BatLi23', autonomia:4},
+    {codice:'S620-22I', marca:'Hager', nome:'Tastiera di comando a codice segreto', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S662-22I', marca:'Hager', nome:'Tastiera di comando vocale con transponder', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
   ],
   altri_rivelatori: [
-    {codice:'S151-22X', nome:'Rivelatore di fumo a basso profilo', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S152-22X', nome:'Rivelatore di calore termovelocimetrico', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:5},
-    {codice:'S220-22X', nome:'Trasmettitore universale', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
-    {codice:'S230-22X', nome:'Trasmettitore universale stagno', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S151-22X', marca:'Hager', nome:'Rivelatore di fumo a basso profilo', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S152-22X', marca:'Hager', nome:'Rivelatore di calore termovelocimetrico', batteria:'BatLi26 — Litio 3,6V 4Ah', autonomia:5},
+    {codice:'S220-22X', marca:'Hager', nome:'Trasmettitore universale', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
+    {codice:'S230-22X', marca:'Hager', nome:'Trasmettitore universale stagno', batteria:'BatLi25 — Litio 3,6V 4Ah', autonomia:4},
   ],
   sensore: [
-    {codice:'GENERICO', nome:'Sensore generico (codice non disponibile)', batteria:'', autonomia:4},
+    {codice:'GENERICO', marca:null, nome:'Sensore generico (codice non disponibile)', batteria:'', autonomia:4},
   ],
   altro: [
-    {codice:'PERSONALIZZATO', nome:'Altro componente', batteria:'', autonomia:null},
+    {codice:'PERSONALIZZATO', marca:null, nome:'Altro componente', batteria:'', autonomia:null},
   ],
 };
 const CATEGORIE_LABEL = {
-  centrale:'Centrale', movimento:'Rivelatore di movimento', apertura:'Rivelatore di apertura',
+  centrale:'Centrale', centrale_batteria:'Centrale (batteria)', movimento:'Rivelatore di movimento', apertura:'Rivelatore di apertura',
   sirena:'Sirena', telecomando:'Telecomando', combinatore:'Combinatore telefonico',
   tastiera:'Tastiera', altri_rivelatori:'Altro rivelatore (fumo/calore/trasmettitore)',
   sensore:'Sensore generico', altro:'Altro'
@@ -346,6 +362,13 @@ const BATTERIE_RIFERIMENTO = [
   {sigla:'BatPB2', desc:'Piombo 12V — 2Ah — Sirene filari S411-22I, S432-22I'},
   {sigla:'CR2430', desc:'Pila a bottone 3V — telecomando RLA604T (confermato), TU444, video S518-22X (2 pz)'},
   {sigla:'CR2016', desc:'Pila a bottone 3V — telecomandi S612-22X/S614-22X, medaglione RLF001X'},
+  // --- AVS Electronics (centrali Fenice/Advance via filo, sistema Raptor via radio) ---
+  {sigla:'Tampone 12V 7Ah', desc:'AVS — Centrali via filo Fenice 8, Advance 88 (batteria al piombo)'},
+  {sigla:'Tampone 12V 17Ah', desc:'AVS — Centrali via filo Xtream 32/64/640 (confermato da scheda tecnica)'},
+  {sigla:'BATTCITYWS', desc:'AVS — Litio 3,6V 5,8Ah — Sirena esterna Raptor City WS4 (alt.: 4x pile alcaline tipo D)'},
+  {sigla:'Pile alcaline tipo D (4x)', desc:'AVS — Sirena interna Raptor TS 22 WS4, alternativa per City WS4'},
+  {sigla:'Litio 3,6V 2,2Ah (Raptor)', desc:'AVS — Rivelatori movimento Raptor JET PA WS4, ONE PA WS4'},
+  {sigla:'CR2032', desc:'AVS — Contatto magnetico WIC 4 MINI, telecomandi ZEN 4 PLUS / BIP 4 PLUS (verificare su etichetta)'},
 ];
 
 /* ===================== Router minimale ===================== */
@@ -407,7 +430,7 @@ function topbar(opts){
   el.innerHTML = `
     ${back? `<button class="back" id="btn-back">‹</button>`:''}
     ${showLogo? `<img class="logo" src="data:image/jpeg;base64,${LOGO_B64}" alt="Ten Solutions">`:''}
-    <div class="title"><h1>${title}</h1>${showLogo? `<span class="tag">Hager Logisty</span>`:''}${sub?`<div class="sub">${sub}</div>`:''}</div>
+    <div class="title"><h1>${title}</h1>${showLogo? `<span class="tag">Hager · AVS</span>`:''}${sub?`<div class="sub">${sub}</div>`:''}</div>
     ${actLabel? `<button class="act" id="btn-act">${actLabel}</button>`:''}
   `;
   if(back) el.querySelector('#btn-back').onclick = ()=>history.back();
@@ -634,19 +657,29 @@ function renderCliente(app, clienteId){
 function modalCentrale(existing, clienteId){
   const isEdit = !!existing;
   const overlay = document.createElement('div'); overlay.className='modal-overlay';
-  const opts = CATALOGO.centrale.map(m=>`<option value="${m.codice}" ${existing&&existing.modello===m.codice?'selected':''}>${m.codice} — ${m.nome}</option>`).join('')
-    + `<option value="PERSONALIZZATO" ${existing&&existing.modello==='PERSONALIZZATO'?'selected':''}>Altro / personalizzato</option>`;
+  const marcheDisponibili = [...new Set(CATALOGO.centrale.map(m=>m.marca).filter(Boolean))];
+  const marcaIniziale = existing ? (CATALOGO.centrale.find(m=>m.codice===existing.modello)?.marca || marcheDisponibili[0]) : marcheDisponibili[0];
+  const marcaOpts = marcheDisponibili.map(mk=>`<option value="${mk}" ${mk===marcaIniziale?'selected':''}>${mk}</option>`).join('');
+
+  function opzioniModello(marca, selezionato){
+    return CATALOGO.centrale.filter(m=>m.marca===marca).map(m=>`<option value="${m.codice}" ${selezionato===m.codice?'selected':''}>${m.codice} — ${m.nome}</option>`).join('')
+      + `<option value="PERSONALIZZATO" ${selezionato==='PERSONALIZZATO'?'selected':''}>Altro / personalizzato</option>`;
+  }
+
   overlay.innerHTML = `<div class="modal">
     <div class="modal-handle"></div>
     <h2>${isEdit?'Modifica centrale':'Nuova centrale'}</h2>
     ${AUTOSAVE_INDICATOR_HTML}
+    <label>Marca</label>
+    <select id="f-marca">${marcaOpts}</select>
     <label>Modello</label>
-    <select id="f-modello">${opts}</select>
+    <select id="f-modello">${opzioniModello(marcaIniziale, existing?existing.modello:null)}</select>
     <div id="f-modello-custom-wrap" style="display:none"><label>Modello (testo libero)</label><input id="f-modello-custom" value="${existing&&existing.modelloCustom?escapeHtml(existing.modelloCustom):''}"></div>
     <label>Matricola / codice centrale</label><input id="f-matricola" class="mono" value="${existing?escapeHtml(existing.matricola||''):''}">
     <label>Data installazione</label><input type="date" id="f-data" value="${existing?existing.dataInstallazione||'':''}">
     <label>Zone / gruppi</label><input id="f-zone" value="${existing?escapeHtml(existing.zone||''):''}">
     <label>Note</label><textarea id="f-note" rows="3">${existing?escapeHtml(existing.note||''):''}</textarea>
+    <div class="hint">Per la batteria della centrale, aggiungila come componente qui sotto ("Centrale (batteria)") — così la tracci con la stessa scheda usata per sirene e sensori.</div>
     <div class="modal-footer">
       ${isEdit?'<button class="btn danger" id="btn-del">Elimina</button>':''}
       <button class="btn" id="btn-cancel">Annulla</button>
@@ -654,10 +687,16 @@ function modalCentrale(existing, clienteId){
     </div>
   </div>`;
   document.body.appendChild(overlay);
+  const selMarca = overlay.querySelector('#f-marca');
   const selModello = overlay.querySelector('#f-modello');
   const customWrap = overlay.querySelector('#f-modello-custom-wrap');
   function syncCustom(){ customWrap.style.display = selModello.value==='PERSONALIZZATO' ? 'block':'none'; }
-  selModello.onchange = syncCustom; syncCustom();
+  selMarca.onchange = ()=>{
+    selModello.innerHTML = opzioniModello(selMarca.value, null);
+    syncCustom();
+  };
+  selModello.onchange = syncCustom;
+  syncCustom();
 
   function buildData(){
     return {
@@ -671,7 +710,7 @@ function modalCentrale(existing, clienteId){
   }
   const auto = wireAutosave(overlay, {
     existing, list: DB.centrali, buildData, extra: {clienteId},
-    minContent: d => d.matricola.length>0 || d.dataInstallazione.length>0 || d.zone.length>0 || d.note.length>0 || d.modelloCustom.length>0,
+    minContent: d => true, // persist() scatta solo dopo un input/change reale, quindi la selezione del modello da sola è già sufficiente
   });
 
   function closeDiscard(){ auto.discardIfUnsaved(); overlay.remove(); render(); }
@@ -795,7 +834,14 @@ function suggerisciEtichetta(categoria, centraleId){
 function modalSensore(existing, centraleId){
   const isEdit = !!existing;
   const overlay = document.createElement('div'); overlay.className='modal-overlay';
-  const catOpts = Object.keys(CATALOGO).filter(k=>k!=='centrale').map(k=>`<option value="${k}" ${existing&&existing.categoria===k?'selected':(!existing&&k==='sensore'?'selected':'')}>${CATEGORIE_LABEL[k]}</option>`).join('');
+  const catOpts = ['centrale_batteria', ...Object.keys(CATALOGO).filter(k=>k!=='centrale')]
+    .map(k=>`<option value="${k}" ${existing&&existing.categoria===k?'selected':(!existing&&k==='sensore'?'selected':'')}>${CATEGORIE_LABEL[k]}</option>`).join('');
+
+  // Determina la marca della centrale a cui appartiene questo componente, per suggerire
+  // solo modelli compatibili (es. non mischiare Hager e AVS nello stesso impianto).
+  const centraleRif = DB.centrali.find(c=>c.id===centraleId);
+  const centraleCatalogo = centraleRif ? CATALOGO.centrale.find(m=>m.codice===centraleRif.modello) : null;
+  const marcaCentrale = centraleCatalogo ? centraleCatalogo.marca : null;
 
   overlay.innerHTML = `<div class="modal">
     <div class="modal-handle"></div>
@@ -834,8 +880,9 @@ function modalSensore(existing, centraleId){
   const fAutonomia = overlay.querySelector('#f-autonomia');
 
   function popolaModelli(){
-    const items = CATALOGO[selCat.value] || [];
-    modelliDatalist.innerHTML = items.filter(m=>m.codice!=='PERSONALIZZATO'&&m.codice!=='GENERICO').map(m=>`<option value="${m.codice}">${m.codice} — ${m.nome}</option>`).join('');
+    const items = selCat.value==='centrale_batteria' ? CATALOGO.centrale : (CATALOGO[selCat.value] || []);
+    const filtrati = items.filter(m=>m.codice!=='PERSONALIZZATO'&&m.codice!=='GENERICO' && (!marcaCentrale || !m.marca || m.marca===marcaCentrale));
+    modelliDatalist.innerHTML = filtrati.map(m=>`<option value="${m.codice}">${m.codice} — ${m.nome}</option>`).join('');
   }
   function suggerisciSeVuoto(){
     if(!isEdit && !fEtichetta.value.trim()){
@@ -844,7 +891,7 @@ function modalSensore(existing, centraleId){
   }
   selCat.onchange = ()=>{ popolaModelli(); suggerisciSeVuoto(); };
   fModello.addEventListener('change', ()=>{
-    const items = CATALOGO[selCat.value] || [];
+    const items = selCat.value==='centrale_batteria' ? CATALOGO.centrale : (CATALOGO[selCat.value] || []);
     const found = items.find(m=>m.codice.toLowerCase()===fModello.value.trim().toLowerCase());
     if(found && !fBatteria.value.trim()){ fBatteria.value = found.batteria||''; if(found.autonomia) fAutonomia.value = found.autonomia; }
   });
@@ -916,7 +963,7 @@ function modalIntervento(centraleId){
       <option>Aggiornamento centrale</option>
       <option>Altro</option>
     </select>
-    ${sensori.length? `<label>Batterie sostituite in questo intervento</label>${checklines}<div class="hint">Seleziona i sensori e il tipo di batteria montata.</div>` : '<div class="hint" style="margin-top:14px">Nessun sensore registrato su questa centrale.</div>'}
+    ${sensori.length? `<label>Batterie sostituite in questo intervento</label>${checklines}<div class="hint">Seleziona i componenti con la batteria appena sostituita, e il tipo montato.</div>` : '<div class="hint" style="margin-top:14px">Nessun componente registrato su questa centrale.</div>'}
     <label>Note</label><textarea id="f-note" rows="3" placeholder="Dettagli intervento, anomalie riscontrate..."></textarea>
     <div class="modal-footer">
       <button class="btn" id="btn-cancel">Annulla</button>
@@ -1203,12 +1250,12 @@ function renderReport(app, centraleId){
 
 /* ===================== Vista: Riferimento batterie ===================== */
 function renderRiferimentoBatterie(app){
-  app.appendChild(topbar({title:'Riferimento batterie', sub:'Gamma Hager Logisty', back:true}));
+  app.appendChild(topbar({title:'Riferimento batterie', sub:'Hager Logisty · AVS Electronics', back:true}));
   const wrap = document.createElement('div'); wrap.className='wrap';
   const card = document.createElement('div'); card.className='card';
   let rows = BATTERIE_RIFERIMENTO.map(b=>`<tr><td class="mono">${b.sigla}</td><td>${b.desc}</td></tr>`).join('');
   card.innerHTML = `<table><thead><tr><th>Sigla</th><th>Utilizzo</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="hint" style="margin-top:12px">Dati tratti dal Listino ufficiale Hager Sicurezza (linea Logisty Expert/Sepio). Per i modelli della linea Vocalis/Logisty2 più datata (L3315I e simili) verificare comunque la sigla stampata sulla batteria montata, perché il listino non specifica il dettaglio per ogni singolo modello di quella linea. In caso di sostituzione, togliere le batterie esaurite e attendere almeno 5 minuti prima di installare le nuove.</div>`;
+    <div class="hint" style="margin-top:12px">Dati Hager tratti dal Listino ufficiale Hager Sicurezza (linea Logisty Expert/Sepio). Per i modelli della linea Vocalis/Logisty2 più datata (L3315I e simili) verificare comunque la sigla stampata sulla batteria montata, perché il listino non specifica il dettaglio per ogni singolo modello di quella linea. Dati AVS tratti da schede prodotto e listino pubblico AVS Electronics (linea Raptor via radio e centrali Fenice/Advance via filo) — dove indicato "verificare", il dato non è confermato da fonte diretta. In caso di sostituzione, togliere le batterie esaurite e attendere almeno 5 minuti prima di installare le nuove.</div>`;
   wrap.appendChild(card);
   app.appendChild(wrap);
 }
