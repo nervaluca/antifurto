@@ -879,14 +879,20 @@ function modalSensore(existing, centraleId){
   const fBatteria = overlay.querySelector('#f-batteria');
   const fAutonomia = overlay.querySelector('#f-autonomia');
 
+  // Stessa logica già usata per la batteria: l'etichetta suggerita si aggiorna liberamente
+  // cambiando categoria, finché l'utente non la modifica a mano — a quel punto resta ferma.
+  fEtichetta.dataset.auto = isEdit ? 'false' : 'true';
+  fEtichetta.addEventListener('input', ()=>{ fEtichetta.dataset.auto = 'false'; });
+
   function popolaModelli(){
     const items = selCat.value==='centrale_batteria' ? CATALOGO.centrale : (CATALOGO[selCat.value] || []);
     const filtrati = items.filter(m=>m.codice!=='PERSONALIZZATO'&&m.codice!=='GENERICO' && (!marcaCentrale || !m.marca || m.marca===marcaCentrale));
     modelliDatalist.innerHTML = filtrati.map(m=>`<option value="${m.codice}">${m.codice} — ${m.nome}</option>`).join('');
   }
   function suggerisciSeVuoto(){
-    if(!isEdit && !fEtichetta.value.trim()){
+    if(fEtichetta.dataset.auto!=='false'){
       fEtichetta.value = suggerisciEtichetta(selCat.value, centraleId);
+      fEtichetta.dataset.auto = 'true';
     }
   }
   selCat.onchange = ()=>{ popolaModelli(); suggerisciSeVuoto(); };
@@ -896,7 +902,7 @@ function modalSensore(existing, centraleId){
     if(found && !fBatteria.value.trim()){ fBatteria.value = found.batteria||''; if(found.autonomia) fAutonomia.value = found.autonomia; }
   });
   popolaModelli();
-  if(!isEdit) suggerisciSeVuoto();
+  suggerisciSeVuoto();
 
   function buildData(){
     return {
